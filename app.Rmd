@@ -25,6 +25,7 @@ library(knitr)
 library(here)
 library(DT)
 library(scales)
+library(lubridate)
 ```
 
 
@@ -54,7 +55,7 @@ source(here::here('rscript', 'course_checks.R'))
 ```
 
 ## Student - Audit Reports {.tabset}
-
+*Last Updated: `r unique(as_datetime(student_sql$daterun))`*
 
 ### Demographics
 
@@ -516,5 +517,35 @@ if(nrow(crse_check_02) > 0) {
                ) %>%
     cols_hide(error_message) %>%
     cols_move(columns = start_time_1, after = section_number)
+}
+```
+
+```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
+if(nrow(crse_check_03) > 0) {
+  mkd_table(crse_check_03, "Student Level", unique(crse_check_03$error_message)) %>%
+    cols_label(term = md("**Term**"),
+               crn = md("**CRN**"),
+               subject_code = md("**Subject**"),
+               section_number = md("**Section**"),
+               start_time_1 = md("**Start Time**"),
+               enrollment = md("**Enrollment**"),
+               error_message = md("**Error Message**")
+               ) %>%
+    cols_hide(error_message)
+}
+```
+
+```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
+if(nrow(crse_check_04) > 0) {
+  mkd_table(crse_check_04, "Student Level", unique(crse_check_04$error_message)) %>%
+    cols_label(term = md("**Term**"),
+               crn = md("**CRN**"),
+               subject_code = md("**Subject**"),
+               section_number = md("**Section**"),
+               budget_code = md("**Budget Code**"),
+               enrollment = md("**Enrollment**"),
+               error_message = md("**Error Message**")
+               ) %>%
+    cols_hide(error_message)
 }
 ```
