@@ -2,9 +2,13 @@
 output: 
   html_document:
     css: !expr here::here("www", "style.css")
-#runtime: shiny
-
 pagetitle: "Audit Reports"
+resource_files:
+- data/*
+- rscript/*
+- sensitive/*
+- sql/*
+- www/*
 ---
 
 ```{r include=FALSE, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
