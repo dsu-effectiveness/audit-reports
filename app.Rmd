@@ -48,7 +48,11 @@ mkd_table <- function(err_data, title, subtitle) {
     column_labels.border.bottom.color = "black",
     table.align = "left",
     table.width = pct(100)
-  )
+  ) %>%
+    cols_align(
+      align = "auto",
+      columns = everything()
+    )
   }
 ```
 
@@ -58,8 +62,8 @@ source(here::here('rscript', 'course_checks.R'))
 
 ```
 
-## Student - Audit Reports {.tabset}
-*Last Updated: `r unique(as_datetime(student_sql$daterun))`*
+## Audit Reports {.tabset}
+*Last Updated: `r unique(as_date(student_sql$daterun))`*
 
 ### Demographics
 
@@ -73,8 +77,8 @@ if(nrow(demo_check_01) > 0) {
              last_name = md("**Last Name**"),
              gender = md("**Gender**"),
              error_message = md("**Error Message**"),
-             banner_table = md("**Table Name(s)**"),
-             banner_column = md("**Column Name(s)**")
+             banner_table = md("**Table Name**"),
+             banner_column = md("**Column Name**")
              ) %>%
     cols_hide(error_message)
 }
@@ -91,8 +95,8 @@ mkd_table(demo_check_02, "County - US", unique(demo_check_02$error_message)) %>%
                admit_country = md("**Country**"),
                admit_county = md("**County**"),
                error_message = md("**Error Message**"),
-               banner_table = md("**Table Name(s)**"),
-               banner_column = md("**Column Name(s)**")
+               banner_table = md("**Table Name**"),
+               banner_column = md("**Column Name**")
                ) %>%
     cols_hide(error_message)
 }
@@ -108,8 +112,8 @@ mkd_table(demo_check_03, "State", unique(demo_check_03$error_message)) %>%
                last_name = md("**Last Name**"),
                admit_state = md("**State**"),
                error_message = md("**Error Message**"),
-               banner_table = md("**Table Name(s)**"),
-               banner_column = md("**Column Name(s)**")
+               banner_table = md("**Table Name**"),
+               banner_column = md("**Column Name**")
                ) %>%
     cols_hide(error_message)
 }
@@ -126,8 +130,8 @@ if(nrow(demo_check_04) > 0) {
                admit_state = md("**State**"),
                admit_county = md("**County**"),
                error_message = md("**Error Message**"),
-               banner_table = md("**Table Name(s)**"),
-               banner_column = md("**Column Name(s)**")
+               banner_table = md("**Table Name**"),
+               banner_column = md("**Column Name**")
                ) %>%
     cols_hide(error_message)
     }
@@ -143,8 +147,8 @@ if(nrow(demo_check_05) > 0) {
                last_name = md("**Last Name**"),
                admit_state = md("**State**"),
                error_message = md("**Error Message**"),
-               banner_table = md("**Table Name(s)**"),
-               banner_column = md("**Column Name(s)**")
+               banner_table = md("**Table Name**"),
+               banner_column = md("**Column Name**")
                ) %>%
     cols_hide(error_message)
     }
@@ -161,8 +165,8 @@ if(nrow(demo_check_07) > 0) {
                age = md("**Age Code**"),
                high_school_code = md("**HS Code**"),
                error_message = md("**Error Message**"),
-               banner_table = md("**Table Name(s)**"),
-               banner_column = md("**Column Name(s)**")
+               banner_table = md("**Table Name**"),
+               banner_column = md("**Column Name**")
                ) %>%
     cols_hide(error_message)
 }
@@ -179,8 +183,8 @@ mkd_table(int_error_01, "Visa Type & Citizenship Code", unique(int_error_01$erro
                  citz_code = md("**Citizen Code**"),
                  visa_type = md("**Visa Type**"),
                  error_message = md("**Error Message**"),
-                 banner_table = md("**Table Name(s)**"),
-                 banner_column = md("**Column Name(s)**")
+                 banner_table = md("**Table Name**"),
+                 banner_column = md("**Column Name**")
                  ) %>%
       cols_hide(error_message)
       }
@@ -191,7 +195,7 @@ mkd_table(int_error_01, "Visa Type & Citizenship Code", unique(int_error_01$erro
 ### Degrees & Programs
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE, fig.align='left'}
 if(nrow(programs_check_01) > 0) {
-  mkd_table(programs_check_01, "High School Code", unique(programs_check_01$error_message)) %>%
+  mkd_table(programs_check_01, "Degrees & Programs", unique(programs_check_01$error_message)) %>%
     cols_label(term = md("**Term**"),
                pidm = md("**PIDM**"),
                banner_id = md("**Student ID**"),
@@ -200,8 +204,8 @@ if(nrow(programs_check_01) > 0) {
                cur_prgm = md("**Program 1**"),
                cur_prgm_2 = md("**Program 2**"),
                error_message = md("**Error Message**"),
-               banner_table = md("**Table Name(s)**"),
-               banner_column = md("**Column Name(s)**")
+               banner_table = md("**Table Name**"),
+               banner_column = md("**Column Name**")
                ) %>%
     cols_hide(error_message)
     }
@@ -219,8 +223,8 @@ if(nrow(programs_check_02) > 0) {
                cur_prgm = md("**Program**"),
                high_school_grad_date = md("**HS Graduation Date**"),
                error_message = md("**Error Message**"),
-               banner_table = md("**Table Name(s)**"),
-               banner_column = md("**Column Name(s)**")
+               banner_table = md("**Table Name**"),
+               banner_column = md("**Column Name**")
                ) %>%
     cols_hide(error_message)
 }
@@ -238,8 +242,8 @@ if(nrow(programs_check_03) > 0) {
                major_code = md("**Major Code**"),
                cur_prgm = md("**Program**"),
                error_message = md("**Error Message**"),
-               banner_table = md("**Table Name(s)**"),
-               banner_column = md("**Column Name(s)**")
+               banner_table = md("**Table Name**"),
+               banner_column = md("**Column Name**")
                ) %>%
     cols_hide(error_message)
 }
@@ -274,6 +278,7 @@ if(nrow(stype_check_02) > 0) {
                term_start_date = md("**Term Start Date**"),
                high_school_grad_date = md("**HS Graduation Date**"),
                student_type = md("**Student Type**"),
+               entry_action= md("**Entry Action**"),
                error_message = md("**Error Message**")
                ) %>%
     cols_hide(error_message)
@@ -482,24 +487,11 @@ if(nrow(stype_check_13) > 0) {
 
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
 if(nrow(crse_check_01) > 0) {
-  mkd_table(crse_check_01, "Student Level", unique(crse_check_01$error_message)) %>%
+  mkd_table(crse_check_01, "Cancelled Course with Enrollments", unique(crse_check_01$error_message)) %>%
     cols_label(term = md("**Term**"),
                crn = md("**CRN**"),
                subject_code = md("**Subject**"),
-               section_number = md("**Section**"),
-               enrollment = md("**Enrollment**"),
-               error_message = md("**Error Message**")
-               ) %>%
-    cols_hide(error_message)
-}
-```
-
-```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
-if(nrow(crse_check_01) > 0) {
-  mkd_table(crse_check_01, "Student Level", unique(crse_check_01$error_message)) %>%
-    cols_label(term = md("**Term**"),
-               crn = md("**CRN**"),
-               subject_code = md("**Subject**"),
+               course_number = md("**Course**"),
                section_number = md("**Section**"),
                enrollment = md("**Enrollment**"),
                error_message = md("**Error Message**")
@@ -510,29 +502,31 @@ if(nrow(crse_check_01) > 0) {
 
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
 if(nrow(crse_check_02) > 0) {
-  mkd_table(crse_check_02, "Student Level", unique(crse_check_02$error_message)) %>%
+  mkd_table(crse_check_02, "Course Section", unique(crse_check_02$error_message)) %>%
     cols_label(term = md("**Term**"),
                crn = md("**CRN**"),
                subject_code = md("**Subject**"),
+               course_number = md("**Course**"),
                section_number = md("**Section**"),
-               start_time_1 = md("**Start Time**"),
                enrollment = md("**Enrollment**"),
+               start_time_1 = md("**Start Time**"),
                error_message = md("**Error Message**")
                ) %>%
     cols_hide(error_message) %>%
-    cols_move(columns = start_time_1, after = section_number)
+    cols_align(align = "right", columns = start_time_1)
 }
 ```
 
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
 if(nrow(crse_check_03) > 0) {
-  mkd_table(crse_check_03, "Student Level", unique(crse_check_03$error_message)) %>%
+  mkd_table(crse_check_03, "Schedule Code", unique(crse_check_03$error_message)) %>%
     cols_label(term = md("**Term**"),
                crn = md("**CRN**"),
                subject_code = md("**Subject**"),
+               course_number = md("**Course**"),
                section_number = md("**Section**"),
-               start_time_1 = md("**Start Time**"),
                enrollment = md("**Enrollment**"),
+               start_time_1 = md("**Start Time**"),
                error_message = md("**Error Message**")
                ) %>%
     cols_hide(error_message)
@@ -541,13 +535,207 @@ if(nrow(crse_check_03) > 0) {
 
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
 if(nrow(crse_check_04) > 0) {
-  mkd_table(crse_check_04, "Student Level", unique(crse_check_04$error_message)) %>%
+  mkd_table(crse_check_04, "Budget Code", unique(crse_check_04$error_message)) %>%
     cols_label(term = md("**Term**"),
                crn = md("**CRN**"),
                subject_code = md("**Subject**"),
+               course_number = md("**Course**"),
                section_number = md("**Section**"),
                budget_code = md("**Budget Code**"),
                enrollment = md("**Enrollment**"),
+               error_message = md("**Error Message**")
+               ) %>%
+    cols_hide(error_message)
+}
+```
+
+
+```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
+# if(nrow(crse_check_05) > 0) {
+#   mkd_table(crse_check_05, "Budget Code", unique(crse_check_05$error_message)) %>%
+#     cols_label(term = md("**Term**"),
+#                crn = md("**CRN**"),
+#                subject_code = md("**Subject**"),
+#                section_number = md("**Section**"),
+#                budget_code = md("**Budget Code**"),
+#                enrollment = md("**Enrollment**"),
+#                error_message = md("**Error Message**")
+#                ) %>%
+#     cols_hide(error_message)
+# }
+```
+
+```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
+if(nrow(crse_check_06) > 0) {
+  mkd_table(crse_check_06, "Online Courses", unique(crse_check_06$error_message)) %>%
+    cols_label(term = md("**Term**"),
+               crn = md("**CRN**"),
+               subject_code = md("**Subject**"),
+               course_number = md("**Course**"),
+               section_number = md("**Section**"),
+               enrollment = md("**Enrollment**"),
+               campus_code = md("**Campus**"),
+               instruction_method = md("**Instruction Method**"),
+               error_message = md("**Error Message**")
+               ) %>%
+    cols_hide(error_message)
+}
+```
+
+```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
+if(nrow(crse_check_07) > 0) {
+  mkd_table(crse_check_07, "Online Courses", unique(crse_check_07$error_message)) %>%
+    cols_label(term = md("**Term**"),
+               crn = md("**CRN**"),
+               subject_code = md("**Subject**"),
+               course_number = md("**Course**"),
+               section_number = md("**Section**"),
+               enrollment = md("**Enrollment**"),
+               building_code_1 = md("**Building**"),
+               room_code_1 = md("**Room**"),
+               error_message = md("**Error Message**")
+               ) %>%
+    cols_hide(error_message)
+}
+```
+
+### Schedule Type
+
+```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
+if(nrow(schd_check_01) > 0) {
+  mkd_table(schd_check_01, "Schedule Type", unique(schd_check_01$error_message)) %>%
+    cols_label(term = md("**Term**"),
+               crn = md("**CRN**"),
+               subject_code = md("**Subject**"),
+               course_number = md("**Course**"),
+               section_number = md("**Section**"),
+               enrollment = md("**Enrollment**"),
+               schedule_code = md("**Schedule**"),
+               credit_hours = md("**Credit Hours**"),
+               lecture_hours = md("**Lecture Hours**"),
+               lab_hours = md("**Lab Hours**"),
+               other_hours = md("**Other Hours**"),
+               error_message = md("**Error Message**")
+               ) %>%
+    cols_hide(error_message)
+}
+```
+
+```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
+if(nrow(schd_check_02) > 0) {
+  mkd_table(schd_check_02, "Schedule Type", unique(schd_check_02$error_message)) %>%
+    cols_label(term = md("**Term**"),
+               crn = md("**CRN**"),
+               subject_code = md("**Subject**"),
+               course_number = md("**Course**"),
+               section_number = md("**Section**"),
+               enrollment = md("**Enrollment**"),
+               schedule_code = md("**Schedule**"),
+               credit_hours = md("**Credit Hours**"),
+               lecture_hours = md("**Lecture Hours**"),
+               lab_hours = md("**Lab Hours**"),
+               other_hours = md("**Other Hours**"),
+               error_message = md("**Error Message**")
+               ) %>%
+    cols_hide(error_message)
+}
+```
+
+```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
+if(nrow(schd_check_03) > 0) {
+  mkd_table(schd_check_03, "Schedule Type", unique(schd_check_03$error_message)) %>%
+    cols_label(term = md("**Term**"),
+               crn = md("**CRN**"),
+               subject_code = md("**Subject**"),
+               course_number = md("**Course**"),
+               section_number = md("**Section**"),
+               enrollment = md("**Enrollment**"),
+               schedule_code = md("**Schedule**"),
+               credit_hours = md("**Credit Hours**"),
+               lecture_hours = md("**Lecture Hours**"),
+               lab_hours = md("**Lab Hours**"),
+               other_hours = md("**Other Hours**"),
+               error_message = md("**Error Message**")
+               ) %>%
+    cols_hide(error_message)
+}
+```
+
+```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
+if(nrow(schd_check_04) > 0) {
+  mkd_table(schd_check_04, "Schedule Type", unique(schd_check_04$error_message)) %>%
+    cols_label(term = md("**Term**"),
+               crn = md("**CRN**"),
+               subject_code = md("**Subject**"),
+               course_number = md("**Course**"),
+               section_number = md("**Section**"),
+               enrollment = md("**Enrollment**"),
+               schedule_code = md("**Schedule**"),
+               credit_hours = md("**Credit Hours**"),
+               lecture_hours = md("**Lecture Hours**"),
+               lab_hours = md("**Lab Hours**"),
+               other_hours = md("**Other Hours**"),
+               error_message = md("**Error Message**")
+               ) %>%
+    cols_hide(error_message)
+}
+```
+
+
+```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
+if(nrow(schd_check_05) > 0) {
+  mkd_table(schd_check_05, "Schedule Type", unique(schd_check_05$error_message)) %>%
+    cols_label(term = md("**Term**"),
+               crn = md("**CRN**"),
+               subject_code = md("**Subject**"),
+               course_number = md("**Course**"),
+               section_number = md("**Section**"),
+               enrollment = md("**Enrollment**"),
+               schedule_code = md("**Schedule**"),
+               credit_hours = md("**Credit Hours**"),
+               lecture_hours = md("**Lecture Hours**"),
+               lab_hours = md("**Lab Hours**"),
+               other_hours = md("**Other Hours**"),
+               error_message = md("**Error Message**")
+               ) %>%
+    cols_hide(error_message)
+}
+```
+
+```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
+if(nrow(schd_check_06) > 0) {
+  mkd_table(schd_check_06, "Schedule Type", unique(schd_check_06$error_message)) %>%
+    cols_label(term = md("**Term**"),
+               crn = md("**CRN**"),
+               subject_code = md("**Subject**"),
+               course_number = md("**Course**"),
+               section_number = md("**Section**"),
+               enrollment = md("**Enrollment**"),
+               schedule_code = md("**Schedule**"),
+               credit_hours = md("**Credit Hours**"),
+               lecture_hours = md("**Lecture Hours**"),
+               lab_hours = md("**Lab Hours**"),
+               other_hours = md("**Other Hours**"),
+               error_message = md("**Error Message**")
+               ) %>%
+    cols_hide(error_message)
+}
+```
+
+```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
+if(nrow(schd_check_07) > 0) {
+  mkd_table(schd_check_07, "Schedule Type", unique(schd_check_07$error_message)) %>%
+    cols_label(term = md("**Term**"),
+               crn = md("**CRN**"),
+               subject_code = md("**Subject**"),
+               course_number = md("**Course**"),
+               section_number = md("**Section**"),
+               enrollment = md("**Enrollment**"),
+               schedule_code = md("**Schedule**"),
+               credit_hours = md("**Credit Hours**"),
+               lecture_hours = md("**Lecture Hours**"),
+               lab_hours = md("**Lab Hours**"),
+               other_hours = md("**Other Hours**"),
                error_message = md("**Error Message**")
                ) %>%
     cols_hide(error_message)
