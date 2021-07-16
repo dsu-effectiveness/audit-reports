@@ -69,7 +69,6 @@
                       COALESCE(sfrstcr_last_term_enrolled_end_date, shrtgpa_last_term_enrolled_end_date) AS last_term_enrolled_end_date,
                       last_transfer_term,
                       last_transfer_term_start_date,
-                      --transfer_credits
                      f_calc_entry_action_4(a.sfrstcr_pidm, sfrstcr_term_code) AS entry_action,
                      m.sgrchrt_chrt_code,
                      m.sgrchrt_term_code_eff
@@ -147,15 +146,14 @@
                SELECT
                       shrtgpa_pidm,
                       shrtgpa_levl_code,
-                      MIN(shrtgpa_term_code) AS last_transfer_term,
-                      MIN(stvterm_start_date) AS last_transfer_term_start_date
+                      MAX(shrtgpa_term_code) AS last_transfer_term,
+                      MAX(stvterm_start_date) AS last_transfer_term_start_date
                  FROM shrtgpa a1
             LEFT JOIN shrtrit b1 ON b1.shrtrit_pidm = a1.shrtgpa_pidm
                   AND b1.shrtrit_seq_no = a1.shrtgpa_trit_seq_no
             LEFT JOIN stvsbgi c1 ON c1.stvsbgi_code = b1.shrtrit_sbgi_code
             LEFT JOIN stvterm d1 ON d1.stvterm_code = a1.shrtgpa_term_code
                 WHERE shrtgpa_gpa_type_ind = 'T' -- Transfer GPA
-                  AND stvsbgi_srce_ind = 'Y' -- Valid Source
                   AND stvsbgi_type_ind = 'C' -- From a College
                   AND shrtrit_sbgi_code NOT LIKE 'AP%'
                   AND shrtrit_sbgi_code NOT LIKE 'CLEP%'
@@ -168,7 +166,9 @@
                   AND shrtgpa_term_code < (SELECT dsc.f_get_term(SYSDATE,'nterm') FROM dual)
              GROUP BY shrtgpa_pidm,
                       shrtgpa_levl_code
-               ) k ON k.shrtgpa_pidm = a.sfrstcr_pidm AND k. shrtgpa_levl_code = a.sfrstcr_levl_code
+               ) k ON k.shrtgpa_pidm = a.sfrstcr_pidm
+                  AND k. shrtgpa_levl_code = a.sfrstcr_levl_code
+                  AND k.last_transfer_term_start_date > e.high_school_grad_date
              LEFT JOIN stvterm l ON l.stvterm_code = a.sfrstcr_term_code
              LEFT JOIN sgrchrt m ON m.sgrchrt_pidm = a.sfrstcr_pidm
                    AND (m.sgrchrt_chrt_code LIKE 'FT%'
