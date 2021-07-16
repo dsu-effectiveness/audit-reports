@@ -119,7 +119,7 @@ stype_check_01 <- filter(student_sql, ! is.na(first_term_enrolled_start_date) & 
 #Student Type - HS Concurrent Enrollment
 stype_check_02 <- filter(student_sql, term_start_date > high_school_grad_date & student_type == 'H') %>%
   fn_return_data('Student Type', 'Start Term Date is Greater Than HS Grad Date', 'shrtgpa, sfrstcr', 'shrtgpa_term_code, sfrstcr_term_code') %>%
-  select(all_of(student_columns01), term_start_date, high_school_grad_date, student_type, all_of(student_columns02))
+  select(all_of(student_columns01), term_start_date, high_school_grad_date, student_type, entry_action, all_of(student_columns02))
 
 stype_check_03 <- filter(student_sql, student_type == 'H' & !cur_prgm %in% c('ND-ACE', 'ND-CONC', 'ND-SA')) %>%
   fn_return_data('Student Type', 'Concurrent Student not in a HS Program') %>%
@@ -147,8 +147,8 @@ stype_check_05 <- filter(student_sql,
   select(all_of(student_columns01), student_level, student_type, entry_action, all_of(student_columns02))
 
 stype_check_06 <- filter(student_sql, 
-                         student_level == 'GR' & student_type %in% c('1', '2') & !is.na(first_term_enrolled) |
-                         student_level == 'UG' & student_type == 'T' & !is.na(first_term_enrolled) |
+                         student_level == 'GR' & student_type %in% c('1', '2') & !is.na(first_term_enrolled) & first_term_enrolled != term |
+                         student_level == 'UG' & student_type == 'T' & !is.na(first_term_enrolled) & first_term_enrolled != term |
                          student_level == 'UG' & student_type %in% c('F', 'N') & !is.na(first_term_enrolled) & first_term_enrolled < term & first_term_enrolled_start_date > high_school_grad_date |
                          student_level == 'UG' & entry_action %in% c('FF', 'FH') & !is.na(first_term_enrolled) & first_term_enrolled < term & first_term_enrolled_start_date > high_school_grad_date
                          ) %>%
@@ -211,10 +211,3 @@ stype_check_13 <- select(student_sql, everything()) %>%
   ) %>%
   fn_return_data('Student Type', 'Graduated from HS within a year') %>%
   select(all_of(student_columns01), first_term_enrolled, term_start_date, high_school_grad_date, days_since_hs_graduation, student_type, entry_action, all_of(student_columns02))
-
-
-
-
-
-
-
