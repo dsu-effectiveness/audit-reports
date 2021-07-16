@@ -14,6 +14,6 @@ student_sql <- get_data_from_sql("student.sql", "PROD")
 courses_sql <- get_data_from_sql('courses.sql',"PROD")
 
 # Save data as file
-save_data_as_rds(courses_sql, 'courses.RData')
 save_data_as_rds(student_sql, 'students.RData')
+save_data_as_rds(courses_sql, 'courses.RData')
 
