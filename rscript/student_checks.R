@@ -21,7 +21,7 @@ fn_return_data <- function(data, category, message, table_name, column_name) {
 }
 
 #Variables
-student_columns01 <- c('term', 'pidm', 'banner_id', 'first_name', 'last_name')
+student_columns01 <- c('term', 'banner_id', 'first_name', 'last_name')
 student_columns02 <- c('error_message')
 student_columns03 <- c('banner_table', 'banner_column')
 
@@ -33,7 +33,7 @@ demo_check_01 <- filter(student_sql,!gender %in% c('M', 'F') | is.na(gender)) %>
 #Demographics - County
 demo_check_02 <- filter(student_sql, admit_country == 'US' & is.na(admit_county)) %>%
   fn_return_data('Demographics', 'Missing County', 'sabsupl', 'sabsupl_cnty_code_admit') %>%
-  select(all_of(student_columns01), admit_country, admit_county, all_of(student_columns02), all_of(student_columns03))
+  select(all_of(student_columns01), admit_country, admit_state, admit_county, all_of(student_columns02), all_of(student_columns03))
 
 #Demographics - State
 demo_check_03 <- filter(student_sql, admit_country == 'US' & is.na(admit_state)) %>%
@@ -43,7 +43,7 @@ demo_check_03 <- filter(student_sql, admit_country == 'US' & is.na(admit_state))
 #Demographics - County
 demo_check_04 <- filter(student_sql, admit_state == 'UT' & is.na(admit_county)) %>%
   fn_return_data('Demographics', 'Utah applicant missing county', 'sabsupl', 'sabsupl_cnty_code_admit') %>%
-  select(all_of(student_columns01), admit_state, admit_county, all_of(student_columns02), all_of(student_columns03))
+  select(all_of(student_columns01), admit_country, admit_state, admit_county, all_of(student_columns02), all_of(student_columns03))
 
 #Demographics - Country
 demo_check_05 <- filter(student_sql, admit_state == 'UT' & is.na(admit_country)) %>%
@@ -74,7 +74,7 @@ demo_check_09 <- filter(student_sql, is.na(citz_code)) %>%
 #Demographics - High School Graduation Date is NULL
 demo_check_10 <- filter(student_sql, is.na(high_school_grad_date) & student_type != 'P') %>%
   fn_return_data('Demographics', 'Missing High School Graduation Date', 'sorhsch', 'sorhsch_graduation_date') %>%
-  select(all_of(student_columns01), student_type, high_school_grad_date, all_of(student_columns02), all_of(student_columns03))
+  select(all_of(student_columns01), student_type, high_school_grad_date, age, all_of(student_columns02), all_of(student_columns03))
 
 #INTERNATIONAL STUDENTS
 #Visa Errors
@@ -122,7 +122,7 @@ stype_check_02 <- filter(student_sql, term_start_date > high_school_grad_date & 
   select(all_of(student_columns01), term_start_date, high_school_grad_date, student_type, entry_action, all_of(student_columns02))
 
 stype_check_03 <- filter(student_sql, student_type == 'H' & !cur_prgm %in% c('ND-ACE', 'ND-CONC', 'ND-SA')) %>%
-  fn_return_data('Student Type', 'Concurrent Student not in a HS Program') %>%
+  fn_return_data('Student Type', 'High School Student not in a HS Program') %>%
   select(all_of(student_columns01), cur_prgm, student_type, entry_action, all_of(student_columns02))
 
 #Student Type - Personal Interest Students - NM
@@ -143,7 +143,7 @@ stype_check_05 <- filter(student_sql,
                          !student_level == 'UG' & entry_action == 'FF' | #Entry Action (FF)
                          !student_level == 'UG' & entry_action == 'FH' #Entry Action (FH)
                          ) %>%
-  fn_return_data('Student Type', 'Student level and type does not align') %>%
+  fn_return_data('Student Type', 'Student level and student type does not align') %>%
   select(all_of(student_columns01), student_level, student_type, entry_action, all_of(student_columns02))
 
 stype_check_06 <- filter(student_sql, 
@@ -174,7 +174,7 @@ stype_check_09 <- filter(student_sql,
                          student_level == 'UG' & student_type %in% c('T', 'F', 'N') & !is.na(sgrchrt_chrt_code) & sgrchrt_term_code_eff != term |
                          student_level == 'UG' & entry_action %in% c('FF', 'FH') & !is.na(sgrchrt_chrt_code) & sgrchrt_term_code_eff != term) %>%
   fn_return_data('Student Type', 'Student has a cohort record') %>%
-  select(all_of(student_columns01), sgrchrt_chrt_code, student_type, first_term_enrolled, last_term_enrolled, entry_action, sgrchrt_chrt_code, sgrchrt_term_code_eff, all_of(student_columns02))
+  select(all_of(student_columns01), student_type, sgrchrt_chrt_code, last_term_enrolled, entry_action, all_of(student_columns02))
 
 stype_check_10 <- select(student_sql, everything()) %>%
   mutate(days_since_hs_graduation = difftime(term_start_date, high_school_grad_date)) %>%
@@ -211,3 +211,27 @@ stype_check_13 <- select(student_sql, everything()) %>%
   ) %>%
   fn_return_data('Student Type', 'Graduated from HS within a year') %>%
   select(all_of(student_columns01), first_term_enrolled, term_start_date, high_school_grad_date, days_since_hs_graduation, student_type, entry_action, all_of(student_columns02))
+
+stype_check_14 <- filter(student_sql, is.na(student_level)) %>%
+  fn_return_data('Student Level', 'Student Level is missing') %>%
+  select(all_of(student_columns01), student_level, all_of(student_columns02))
+
+#IE Checks
+ie_check_01 <-  mutate(student_sql, entry_action_mapped = case_when(
+                                         entry_action == 'CS' ~ 'C',
+                                         entry_action == 'FF' ~ 'F',
+                                         entry_action == 'FH' ~ 'F',
+                                         entry_action == 'HS' ~ 'H',
+                                         entry_action == 'RS' ~ 'R',
+                                         entry_action == 'NM' ~ 'P',
+                                         entry_action == 'TU' ~ 'T',
+                                         entry_action == 'NG' ~ '1',
+                                         entry_action == 'RG' ~ '3',
+                                         entry_action == 'CG' ~ '5',
+                                         entry_action == 'NM' ~ '0',
+                                         entry_action == 'TG' ~ '2'
+                                         )
+         ) %>%
+    filter(entry_action_mapped != student_type) %>%
+    fn_return_data('Student Type', 'Entry Action does not match student type') %>%
+    select(all_of(student_columns01), student_type, entry_action, first_term_enrolled, last_term_enrolled, all_of(student_columns02))
