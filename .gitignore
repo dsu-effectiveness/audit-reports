@@ -15,4 +15,5 @@
 *.utf8.md
 *.knit.md
 sensitive/
+rsconnect/
 app.html
