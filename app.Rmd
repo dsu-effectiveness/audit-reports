@@ -19,16 +19,10 @@ knitr::opts_chunk$set(
 
 
 ```{r load libraries, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
-library(shiny)
 library(downloadthis)
-library(viridis)
 library(tidyverse)
 library(gt)
-library(readr)
-library(knitr)
 library(here)
-library(DT)
-library(scales)
 library(lubridate)
 ```
 
