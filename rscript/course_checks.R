@@ -6,8 +6,8 @@ source(here::here('rscript', 'dsu_odbc_prod_connection_object.R'))
 
 courses_sql <- load_data_from_rds('courses.RData')
 
-courses_columns01 <- c('term', 'crn', 'subject_code', 'course_number', 'section_number', 'enrollment')
-courses_columns02 <- c('error_message')
+courses_columns01 <- c('term', 'crn', 'subject_code', 'course_number', 'section_number')
+courses_columns02 <- c('enrollment', 'error_message')
 
 #Function Definitions
 fn_return_data <- function(data, category, message, table_name, column_name) {
