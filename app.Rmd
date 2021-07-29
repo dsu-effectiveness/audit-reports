@@ -167,7 +167,7 @@ if(nrow(demo_check_06) > 0) {
                banner_id = md("**Student ID**"),
                first_name = md("**First Name**"),
                last_name = md("**Last Name**"),
-               age = md("**Age Code**"),
+               age = md("**Age**"),
                high_school_code = md("**HS Code**"),
                error_message = md("**Error Message**"),
                banner_table = md("**Table Name**"),
@@ -198,12 +198,11 @@ if(nrow(demo_check_07) > 0) {
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE, fig.align='left'}
 if(nrow(demo_check_08) > 0) {
   mkd_table(demo_check_08, "Duplicate SSN", unique(demo_check_08$error_message)) %>%
-    cols_label(term = md("**Term**"),
-               banner_id = md("**Student ID**"),
+    cols_label(banner_id = md("**Student ID**"),
                first_name = md("**First Name**"),
                last_name = md("**Last Name**"),
                ssn_masked = md("**SSN**"),
-               student_level = md("**Student Level**"),
+               birth_date = md("**DOB**"),
                error_message = md("**Error Message**"),
                banner_table = md("**Table Name**"),
                banner_column = md("**Column Name**")
@@ -245,10 +244,25 @@ if(nrow(demo_check_10) > 0) {
 }
 ```
 
+```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE, fig.align='left'}
+if(nrow(demo_check_11) > 0) {
+  mkd_table(demo_check_11, "Duplicate High School", unique(demo_check_11$error_message)) %>%
+    cols_label(banner_id = md("**Student ID**"),
+               first_name = md("**First Name**"),
+               last_name = md("**Last Name**"),
+               hs_code = md("**HS Code**"),
+               hs_description = md("**HS Description**"),
+               hs_graduation_date = md("**HS Graduation Date**"),
+               banner_table = md("**Table Name**"),
+               banner_column = md("**Column Name**"),
+               dupe_count = md("**Count**")
+               ) %>%
+    cols_hide(c("error_message", "banner_table", "banner_column"))
+}
+```
+
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
-demo_list <- list(demo_check_01, demo_check_02, demo_check_03, demo_check_04, demo_check_05, demo_check_06, demo_check_07,
-                  demo_check_07, demo_check_08, demo_check_09, demo_check_10
-                  ) 
+demo_list <- list(demo_check_01, demo_check_02, demo_check_03, demo_check_04, demo_check_05, demo_check_06, demo_check_07, demo_check_08, demo_check_09, demo_check_10, demo_check_11) 
 download_data(demo_list, 'demographics')
 ```
 
@@ -304,6 +318,7 @@ if(nrow(programs_check_02) > 0) {
                banner_id = md("**Student ID**"),
                first_name = md("**First Name**"),
                last_name = md("**Last Name**"),
+               student_type = md("**Student Type**"),
                entry_action = md("**Entry Action**"),
                cur_prgm = md("**Program**"),
                high_school_grad_date = md("**HS Graduation Date**"),
@@ -348,8 +363,9 @@ if(nrow(stype_check_01) > 0) {
                banner_id = md("**Student ID**"),
                first_name = md("**First Name**"),
                last_name = md("**Last Name**"),
+               student_type = md("**Student Type**"),
                entry_action = md("**Entry Action**"),
-               first_term_enrolled = md("**First Term Enrolled**"),
+               first_term_enrolled_start_date = md("**First Term Enrolled Date**"),
                high_school_grad_date = md("**HS Graduation Date**"),
                error_message = md("**Error Message**")
                ) %>%
@@ -382,6 +398,7 @@ if(nrow(stype_check_03) > 0) {
                first_name = md("**First Name**"),
                last_name = md("**Last Name**"),
                cur_prgm = md("**Program**"),
+               high_school_grad_date = md("**HS Graduation Date**"),
                student_type = md("**Student Type**"),
                entry_action = md("**Entry Action**"),
                error_message = md("**Error Message**")
