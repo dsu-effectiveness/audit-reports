@@ -6,6 +6,8 @@ source(here::here('rscript', 'dsu_odbc_prod_connection_object.R'))
 
 
 student_sql <- load_data_from_rds('students.RData')
+spbpers_sql <- load_data_from_rds('spbpers.RData')
+sorhsch_sql <- load_data_from_rds('sorhsch.RData')
 
 #Function Definitions
 fn_return_data <- function(data, category, message, table_name, column_name) {
@@ -61,10 +63,11 @@ demo_check_07 <- filter(student_sql, birth_date >= high_school_grad_date)%>%
   select(all_of(student_columns01), age, high_school_grad_date, all_of(student_columns02), all_of(student_columns03))
 
 #Demographics - Duplicate SSN's
-demo_check_08 <- filter(student_sql, !is.na(student_sql$ssn)) %>%
-  get_dupes(ssn, term, student_level) %>%
+demo_check_08 <- filter(spbpers_sql, !is.na(spbpers_sql$ssn)) %>%
+  get_dupes(ssn) %>%
   fn_return_data('Demographics', 'Duplicate SSN', 'spbpers', 'spbpers_ssn') %>%
-  select(all_of(student_columns01), ssn_masked, student_level, all_of(student_columns02), all_of(student_columns03))
+  select(banner_id, first_name, last_name, ssn_masked, birth_date, all_of(student_columns02), all_of(student_columns03)) %>%
+  arrange(ssn_masked)
 
 #Demographics - Null citizenship
 demo_check_09 <- filter(student_sql, is.na(citz_code)) %>%
@@ -75,6 +78,12 @@ demo_check_09 <- filter(student_sql, is.na(citz_code)) %>%
 demo_check_10 <- filter(student_sql, is.na(high_school_grad_date) & student_type != 'P') %>%
   fn_return_data('Demographics', 'Missing High School Graduation Date', 'sorhsch', 'sorhsch_graduation_date') %>%
   select(all_of(student_columns01), student_type, high_school_grad_date, age, all_of(student_columns02), all_of(student_columns03))
+
+#Demographics - Duplicate HS
+demo_check_11 <- filter(sorhsch_sql, !is.na(sorhsch_sql$hs_code)) %>%
+  get_dupes(sorhsch_pidm) %>%
+  fn_return_data('Demographics', 'Duplicate High School Found', 'sorhsch', 'sorhsch_pidm') %>%
+  select(banner_id, first_name, last_name, hs_code, hs_description, hs_graduation_date, all_of(student_columns02), all_of(student_columns03), dupe_count)
 
 #INTERNATIONAL STUDENTS
 #Visa Errors
@@ -101,7 +110,7 @@ programs_check_01 <- filter(student_sql,
 #Programs - HS students with no ND-CONC
 programs_check_02 <- filter(student_sql, !cur_prgm %in% c('ND-CONC','ND-SA','ND-CE', 'ND-ACE') & entry_action == 'HS' & !is.na(cur_prgm)) %>%
   fn_return_data('Programs', 'Entry Action is HS and not a Non-Degree Program', 'sorlcur', 'sorlcur_program') %>%
-  select(all_of(student_columns01), entry_action, cur_prgm, high_school_grad_date, all_of(student_columns02), all_of(student_columns03))
+  select(all_of(student_columns01), student_type, entry_action, cur_prgm, high_school_grad_date, all_of(student_columns02), all_of(student_columns03))
 
 #Programs - Blank Programs
 programs_check_03 <- filter(student_sql, is.na(cur_prgm)) %>%
@@ -112,9 +121,10 @@ programs_check_03 <- filter(student_sql, is.na(cur_prgm)) %>%
 #STUDENT TYPE CHECKS
 
 #Student Type - Checks to make sure student is returning student
-stype_check_01 <- filter(student_sql, ! is.na(first_term_enrolled_start_date) & first_term_enrolled_start_date > high_school_grad_date && student_type == 'R') %>%
+stype_check_01 <- filter(student_sql, !is.na(first_term_enrolled_start_date) & first_term_enrolled_start_date > high_school_grad_date & student_type == 'R') %>%
   fn_return_data('Student Type', 'First term enrolled is greater than HS grad date') %>%
-  select(all_of(student_columns01), entry_action, first_term_enrolled, high_school_grad_date, all_of(student_columns02))
+  select(all_of(student_columns01), student_type, entry_action, first_term_enrolled_start_date, high_school_grad_date, all_of(student_columns02))
+
 
 #Student Type - HS Concurrent Enrollment
 stype_check_02 <- filter(student_sql, term_start_date > high_school_grad_date & student_type == 'H') %>%
@@ -123,7 +133,7 @@ stype_check_02 <- filter(student_sql, term_start_date > high_school_grad_date & 
 
 stype_check_03 <- filter(student_sql, student_type == 'H' & !cur_prgm %in% c('ND-ACE', 'ND-CONC', 'ND-SA')) %>%
   fn_return_data('Student Type', 'High School Student not in a HS Program') %>%
-  select(all_of(student_columns01), cur_prgm, student_type, entry_action, all_of(student_columns02))
+  select(all_of(student_columns01), cur_prgm, high_school_grad_date, student_type, entry_action, all_of(student_columns02))
 
 #Student Type - Personal Interest Students - NM
 stype_check_04 <- filter(student_sql, student_type == 'P' & !cur_prgm %in% c('ND-CE', 'ND-ESL') & ! is.na(cur_prgm)) %>%

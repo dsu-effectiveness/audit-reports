@@ -56,8 +56,8 @@
                       spbpers_citz_code AS citz_code,
                       gorvisa_vtyp_code AS visa_type,
                       gorvisa_visa_expire_date AS visa_expire_date,
-                      high_school_grad_date,
-                      high_school_code,
+                      e2.sorhsch_graduation_date AS high_school_grad_date,
+                      e2.sorhsch_pidm AS high_school_code,
                       f_calculate_age(SYSDATE, spbpers_birth_date, spbpers_dead_date) AS age,
                       sabsupl_cnty_code_admit AS admit_county,
                       sabsupl_stat_code_admit AS admit_state,
@@ -69,6 +69,7 @@
                       COALESCE(sfrstcr_last_term_enrolled_end_date, shrtgpa_last_term_enrolled_end_date) AS last_term_enrolled_end_date,
                       last_transfer_term,
                       last_transfer_term_start_date,
+                      --transfer_credits
                      f_calc_entry_action_4(a.sfrstcr_pidm, sfrstcr_term_code) AS entry_action,
                      m.sgrchrt_chrt_code,
                      m.sgrchrt_term_code_eff
@@ -81,12 +82,12 @@
                    ON d.spriden_pidm = a.sfrstcr_pidm
                   AND d.spriden_change_ind IS NULL
              LEFT JOIN (SELECT MAX(sorhsch_graduation_date) AS high_school_grad_date,
-                              sorhsch_pidm,
-                              sorhsch_sbgi_code AS high_school_code
+                              sorhsch_pidm
                          FROM sorhsch
-                     GROUP BY sorhsch_pidm,
-                              sorhsch_sbgi_code) e
+                     GROUP BY sorhsch_pidm) e
                            ON e.sorhsch_pidm = a.sfrstcr_pidm
+            LEFT JOIN sorhsch e2 ON e2.sorhsch_graduation_date = e.high_school_grad_date
+                          AND e2.sorhsch_pidm = e.sorhsch_pidm
             LEFT JOIN (SELECT MAX(sabsupl_appl_no||sabsupl_term_code_entry) sabsupl_key,
                               sabsupl_pidm
                          FROM sabsupl
@@ -97,10 +98,7 @@
                   AND g.sabsupl_appl_no||g.sabsupl_term_code_entry = f.sabsupl_key
             LEFT JOIN gorvisa h
                    ON h.gorvisa_pidm = a.sfrstcr_pidm
-            /* Enrollment History
-               -first check SHRTGPA
-               -then check in SFRSTCR
-            */
+            /* Enrollment History: first check SHRTGPA, then check in SFRSTCR */
             LEFT JOIN (SELECT DISTINCT shrtgpa_pidm,
                            shrtgpa_levl_code,
                            MAX(shrtgpa_term_code) AS shrtgpa_last_term_enrolled,
@@ -109,22 +107,22 @@
                            MIN(shrtgpa_term_code) AS shrtgpa_first_term_enrolled,
                            MIN(stvterm_start_date) AS shrtgpa_first_term_enrolled_start_date
                       FROM shrtgpa a
-                 LEFT JOIN stvterm b ON b.stvterm_code = a.shrtgpa_term_code
-                     WHERE shrtgpa_term_code < (SELECT dsc.f_get_term(SYSDATE,'nterm') FROM dual) -- Current Term
-                       AND shrtgpa_gpa_type_ind = 'I'
-                  GROUP BY shrtgpa_pidm, shrtgpa_levl_code) l ON l.shrtgpa_pidm = a.sfrstcr_pidm AND l.shrtgpa_levl_code = a.sfrstcr_levl_code
-            LEFT JOIN (SELECT DISTINCT sfrstcr_pidm,
-                                       sfrstcr_levl_code,
-                                       MAX(sfrstcr_term_code) AS sfrstcr_last_term_enrolled,
-                                       MAX(stvterm_start_date) AS sfrstcr_last_term_enrolled_start_date,
-                                       MAX(stvterm_end_date) AS sfrstcr_last_term_enrolled_end_date,
-                                       MIN(sfrstcr_term_code) AS sfrstcr_first_term_enrolled,
-                                       MIN(stvterm_start_date) AS sfrstcr_first_term_enrolled_start_date
-                                  FROM sfrstcr a
-                             LEFT JOIN stvterm b ON b.stvterm_code = a.sfrstcr_term_code
-                                 WHERE sfrstcr_rsts_code IN (SELECT DISTINCT stvrsts_code FROM stvrsts WHERE stvrsts_incl_sect_enrl = 'Y')
-                                   AND sfrstcr_term_code < (SELECT dsc.f_get_term(SYSDATE,'nterm') FROM dual) -- Current Term
-                              GROUP BY sfrstcr_pidm, sfrstcr_levl_code) l ON l.sfrstcr_pidm = a.sfrstcr_pidm AND l.sfrstcr_levl_code = a.sfrstcr_levl_code
+           LEFT JOIN stvterm b ON b.stvterm_code = a.shrtgpa_term_code
+               WHERE shrtgpa_term_code < (SELECT dsc.f_get_term(SYSDATE,'nterm') FROM dual) -- Current Term
+                 AND shrtgpa_gpa_type_ind = 'I'
+            GROUP BY shrtgpa_pidm, shrtgpa_levl_code) l ON l.shrtgpa_pidm = a.sfrstcr_pidm AND l.shrtgpa_levl_code = a.sfrstcr_levl_code
+           LEFT JOIN (SELECT DISTINCT sfrstcr_pidm,
+                                      sfrstcr_levl_code,
+                                      MAX(sfrstcr_term_code) AS sfrstcr_last_term_enrolled,
+                                      MAX(stvterm_start_date) AS sfrstcr_last_term_enrolled_start_date,
+                                      MAX(stvterm_end_date) AS sfrstcr_last_term_enrolled_end_date,
+                                      MIN(sfrstcr_term_code) AS sfrstcr_first_term_enrolled,
+                                      MIN(stvterm_start_date) AS sfrstcr_first_term_enrolled_start_date
+                                 FROM sfrstcr a
+                            LEFT JOIN stvterm b ON b.stvterm_code = a.sfrstcr_term_code
+                                WHERE sfrstcr_rsts_code IN (SELECT DISTINCT stvrsts_code FROM stvrsts WHERE stvrsts_incl_sect_enrl = 'Y')
+                                  AND sfrstcr_term_code < (SELECT dsc.f_get_term(SYSDATE,'nterm') FROM dual) -- Current Term
+                             GROUP BY sfrstcr_pidm, sfrstcr_levl_code) l ON l.sfrstcr_pidm = a.sfrstcr_pidm AND l.sfrstcr_levl_code = a.sfrstcr_levl_code
             /* Primary Major */
             LEFT JOIN (SELECT sgvacur_pidm,
                        sgvacur_majr_code_1 AS major_code,
@@ -166,9 +164,7 @@
                   AND shrtgpa_term_code < (SELECT dsc.f_get_term(SYSDATE,'nterm') FROM dual)
              GROUP BY shrtgpa_pidm,
                       shrtgpa_levl_code
-               ) k ON k.shrtgpa_pidm = a.sfrstcr_pidm
-                  AND k. shrtgpa_levl_code = a.sfrstcr_levl_code
-                  AND k.last_transfer_term_start_date > e.high_school_grad_date
+               ) k ON k.shrtgpa_pidm = a.sfrstcr_pidm AND k. shrtgpa_levl_code = a.sfrstcr_levl_code
              LEFT JOIN stvterm l ON l.stvterm_code = a.sfrstcr_term_code
              LEFT JOIN sgrchrt m ON m.sgrchrt_pidm = a.sfrstcr_pidm
                    AND (m.sgrchrt_chrt_code LIKE 'FT%'

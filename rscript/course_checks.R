@@ -144,3 +144,4 @@ schd_check_07 <- filter(courses_sql,
                         lab_hours > 1) %>%
                         fn_return_data('Schedule Type', paste(schedule_desc, ' type is not a lab course')) %>%
                         select(all_of(courses_columns01), schedule_code, credit_hours, lecture_hours, lab_hours, other_hours, all_of(courses_columns02))
+
