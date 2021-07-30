@@ -92,7 +92,9 @@ schd_check_01 <- filter(courses_sql,
                         subject_code != 'CED' &
                         enrollment != 0 &
                         schedule_code %in% c('LEC', 'LEX') &
-                        is.na(lecture_hours)) %>%
+                        (!is.na(lecture_hours) &
+                        !is.na(other_hours) & 
+                        other_hours > 0)) %>%
                 fn_return_data('Schedule Type', paste(schedule_desc, ' type should only have lecture hours')) %>%
                 select(all_of(courses_columns01), schedule_code, credit_hours, lecture_hours, lab_hours, other_hours, all_of(courses_columns02))
  
@@ -100,7 +102,7 @@ schd_check_01 <- filter(courses_sql,
 schd_check_02 <- filter(courses_sql,
                         subject_code != 'CED' &
                         enrollment != 0 &
-                        schedule_code == 'LAB' & 
+                        schedule_code %in% c('LAB', 'LBC', 'ACT') & 
                         is.na(lab_hours)) %>%
                         fn_return_data('Schedule Type', paste(schedule_desc, ' type should only have lab hours')) %>%
                         select(all_of(courses_columns01), schedule_code, credit_hours, lecture_hours, lab_hours, other_hours, all_of(courses_columns02))
@@ -133,15 +135,16 @@ schd_check_06 <- filter(courses_sql,
                         subject_code != 'CED' &
                         enrollment != 0 &
                         !schedule_code %in% c('LEC', 'LEX', 'LEL') & 
-                        lecture_hours > 1) %>%
+                        lecture_hours > 0) %>%
                         fn_return_data('Schedule Type', paste(schedule_desc, ' type is not a lecture course')) %>%
                         select(all_of(courses_columns01), schedule_code, credit_hours, lecture_hours, lab_hours, other_hours, all_of(courses_columns02))
 
 schd_check_07 <- filter(courses_sql,
                         subject_code != 'CED' &
                         enrollment != 0 &
-                        !schedule_code %in% c('LAB', 'LBC', 'LEL') & 
-                        lab_hours > 1) %>%
+                        !schedule_code %in% c('LAB', 'LBC', 'LEL', 'ACT') & 
+                        lab_hours > 0) %>%
                         fn_return_data('Schedule Type', paste(schedule_desc, ' type is not a lab course')) %>%
                         select(all_of(courses_columns01), schedule_code, credit_hours, lecture_hours, lab_hours, other_hours, all_of(courses_columns02))
+
 

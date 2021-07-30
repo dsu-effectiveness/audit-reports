@@ -85,6 +85,26 @@ demo_check_11 <- filter(sorhsch_sql, !is.na(sorhsch_sql$hs_code)) %>%
   fn_return_data('Demographics', 'Duplicate High School Found', 'sorhsch', 'sorhsch_pidm') %>%
   select(banner_id, first_name, last_name, hs_code, hs_description, hs_graduation_date, all_of(student_columns02), all_of(student_columns03), dupe_count)
 
+#Demographics - US non citzen nationals
+demo_check_12 <- filter(student_sql, 
+                        (citz_code != '5' & 
+                        admit_state == 'AS') | 
+                        (citz_code == '5' &
+                        admit_state != 'AS')
+                        ) %>%
+  fn_return_data('Demographics', 'Incorrect citizen code assigned', 'spbpers', 'spbpers_citz_code') %>%
+  select(all_of(student_columns01), citz_code, admit_state, all_of(student_columns02), all_of(student_columns03))
+
+#Demographics - Undocumented students - Need to add HS Desc
+demo_check_13 <- filter(student_sql, 
+                        citz_code == '4' & 
+                       (admit_state != 'UT' |
+                        str_detect(high_school_code, '^45', negate = TRUE))
+) %>%
+  fn_return_data('Demographics', 'Undocumented students not from UT or from a UT HS', 'spbpers', 'spbpers_citz_code') %>%
+  select(all_of(student_columns01), citz_code, admit_state, high_school_code, high_school_desc, all_of(student_columns02), all_of(student_columns03))
+
+
 #INTERNATIONAL STUDENTS
 #Visa Errors
 today <- lubridate::now()
@@ -121,8 +141,10 @@ programs_check_03 <- filter(student_sql, is.na(cur_prgm)) %>%
 #STUDENT TYPE CHECKS
 
 #Student Type - Checks to make sure student is returning student
-stype_check_01 <- filter(student_sql, !is.na(first_term_enrolled_start_date) & first_term_enrolled_start_date > high_school_grad_date & student_type == 'R') %>%
-  fn_return_data('Student Type', 'First term enrolled is greater than HS grad date') %>%
+stype_check_01 <- filter(student_sql, 
+                         student_type == 'R' & 
+                         is.na(first_term_enrolled_start_date)) %>%
+  fn_return_data('Student Type', 'First term enrolled is blank') %>%
   select(all_of(student_columns01), student_type, entry_action, first_term_enrolled_start_date, high_school_grad_date, all_of(student_columns02))
 
 
@@ -167,7 +189,7 @@ stype_check_06 <- filter(student_sql,
 
 stype_check_07 <- filter(student_sql, 
                          student_level == 'GR' & student_type == '1' & !is.na(last_transfer_term) |
-                         student_level == 'UG' & student_type %in% c('N', 'F') &  !is.na(last_transfer_term)
+                         student_level == 'UG' & student_type %in% c('N', 'F') &  !is.na(last_transfer_term) & high_school_grad_date < last_transfer_term_start_date
                          ) %>%
   fn_return_data('Student Type', 'Student has transfer record') %>%
   select(all_of(student_columns01), student_level, last_transfer_term, student_type, entry_action, all_of(student_columns02))

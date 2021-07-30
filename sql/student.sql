@@ -58,6 +58,7 @@
                       gorvisa_visa_expire_date AS visa_expire_date,
                       e2.sorhsch_graduation_date AS high_school_grad_date,
                       e2.sorhsch_pidm AS high_school_code,
+                      e3.stvsbgi_desc AS high_school_desc,
                       f_calculate_age(SYSDATE, spbpers_birth_date, spbpers_dead_date) AS age,
                       sabsupl_cnty_code_admit AS admit_county,
                       sabsupl_stat_code_admit AS admit_state,
@@ -88,6 +89,7 @@
                            ON e.sorhsch_pidm = a.sfrstcr_pidm
             LEFT JOIN sorhsch e2 ON e2.sorhsch_graduation_date = e.high_school_grad_date
                           AND e2.sorhsch_pidm = e.sorhsch_pidm
+            LEFT JOIN stvsbgi e3 ON e3.stvsbgi_code = e2.sorhsch_sbgi_code
             LEFT JOIN (SELECT MAX(sabsupl_appl_no||sabsupl_term_code_entry) sabsupl_key,
                               sabsupl_pidm
                          FROM sabsupl
@@ -110,7 +112,9 @@
            LEFT JOIN stvterm b ON b.stvterm_code = a.shrtgpa_term_code
                WHERE shrtgpa_term_code < (SELECT dsc.f_get_term(SYSDATE,'nterm') FROM dual) -- Current Term
                  AND shrtgpa_gpa_type_ind = 'I'
-            GROUP BY shrtgpa_pidm, shrtgpa_levl_code) l ON l.shrtgpa_pidm = a.sfrstcr_pidm AND l.shrtgpa_levl_code = a.sfrstcr_levl_code
+            GROUP BY shrtgpa_pidm, shrtgpa_levl_code) l ON l.shrtgpa_pidm = a.sfrstcr_pidm
+                                                       AND l.shrtgpa_levl_code = a.sfrstcr_levl_code
+                                                       AND e2.sorhsch_graduation_date < shrtgpa_first_term_enrolled_start_date
            LEFT JOIN (SELECT DISTINCT sfrstcr_pidm,
                                       sfrstcr_levl_code,
                                       MAX(sfrstcr_term_code) AS sfrstcr_last_term_enrolled,
@@ -122,7 +126,9 @@
                             LEFT JOIN stvterm b ON b.stvterm_code = a.sfrstcr_term_code
                                 WHERE sfrstcr_rsts_code IN (SELECT DISTINCT stvrsts_code FROM stvrsts WHERE stvrsts_incl_sect_enrl = 'Y')
                                   AND sfrstcr_term_code < (SELECT dsc.f_get_term(SYSDATE,'nterm') FROM dual) -- Current Term
-                             GROUP BY sfrstcr_pidm, sfrstcr_levl_code) l ON l.sfrstcr_pidm = a.sfrstcr_pidm AND l.sfrstcr_levl_code = a.sfrstcr_levl_code
+                             GROUP BY sfrstcr_pidm, sfrstcr_levl_code) l ON l.sfrstcr_pidm = a.sfrstcr_pidm
+                                                                        AND l.sfrstcr_levl_code = a.sfrstcr_levl_code
+                                                                        AND e2.sorhsch_graduation_date < sfrstcr_first_term_enrolled_start_date
             /* Primary Major */
             LEFT JOIN (SELECT sgvacur_pidm,
                        sgvacur_majr_code_1 AS major_code,
@@ -139,7 +145,7 @@
                                                    AND a1.sgbstdn_term_code_eff <= (SELECT dsc.f_get_term(SYSDATE,'nterm') FROM dual))
                     ) i ON i.sgvacur_pidm = a.sfrstcr_pidm
             LEFT JOIN stvmajr j ON j.stvmajr_code = i.major_code
---           /* Transfers */
+--          /* Transfers */
             LEFT JOIN (
                SELECT
                       shrtgpa_pidm,
@@ -153,14 +159,7 @@
             LEFT JOIN stvterm d1 ON d1.stvterm_code = a1.shrtgpa_term_code
                 WHERE shrtgpa_gpa_type_ind = 'T' -- Transfer GPA
                   AND stvsbgi_type_ind = 'C' -- From a College
-                  AND shrtrit_sbgi_code NOT LIKE 'AP%'
-                  AND shrtrit_sbgi_code NOT LIKE 'CLEP%'
-                  AND shrtrit_sbgi_code NOT LIKE 'CLP%'
-                  AND shrtrit_sbgi_code NOT LIKE 'FL%'
-                  AND shrtrit_sbgi_code NOT LIKE 'VERT%'
-                  AND shrtrit_sbgi_code NOT LIKE 'IBO%'
-                  AND shrtrit_sbgi_code NOT LIKE 'MIL%'
-                  AND shrtrit_sbgi_code NOT LIKE 'MLASP%'
+                  AND stvsbgi_srce_ind = 'Y'
                   AND shrtgpa_term_code < (SELECT dsc.f_get_term(SYSDATE,'nterm') FROM dual)
              GROUP BY shrtgpa_pidm,
                       shrtgpa_levl_code

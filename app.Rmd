@@ -261,8 +261,42 @@ if(nrow(demo_check_11) > 0) {
 }
 ```
 
+```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE, fig.align='left'}
+if(nrow(demo_check_12) > 0) {
+  mkd_table(demo_check_12, "Citizenship", unique(demo_check_12$error_message)) %>%
+    cols_label(term = md("**Term**"),
+               banner_id = md("**Student ID**"),
+               first_name = md("**First Name**"),
+               last_name = md("**Last Name**"),
+               citz_code = md("**Citizen Code**"),
+               admit_state = md("**State**"),
+               banner_table = md("**Table Name**"),
+               banner_column = md("**Column Name**")
+               ) %>%
+    cols_hide(c("error_message"))
+}
+```
+
+```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE, fig.align='left'}
+if(nrow(demo_check_13) > 0) {
+  mkd_table(demo_check_13, "Citizenship", unique(demo_check_13$error_message)) %>%
+    cols_label(term = md("**Term**"),
+               banner_id = md("**Student ID**"),
+               first_name = md("**First Name**"),
+               last_name = md("**Last Name**"),
+               citz_code = md("**Citizen Code**"),
+               admit_state = md("**State**"),
+               high_school_code = md("**High School Code**"),
+               high_school_desc = md("**High School**"),
+               banner_table = md("**Table Name**"),
+               banner_column = md("**Column Name**")
+               ) %>%
+    cols_hide(c("error_message"))
+}
+```
+
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
-demo_list <- list(demo_check_01, demo_check_02, demo_check_03, demo_check_04, demo_check_05, demo_check_06, demo_check_07, demo_check_08, demo_check_09, demo_check_10, demo_check_11) 
+demo_list <- list(demo_check_01, demo_check_02, demo_check_03, demo_check_04, demo_check_05, demo_check_06, demo_check_07, demo_check_08, demo_check_09, demo_check_10, demo_check_11, demo_check_12, demo_check_13) 
 download_data(demo_list, 'demographics')
 ```
 
