@@ -101,7 +101,7 @@ demo_check_13 <- filter(student_sql,
                        (admit_state != 'UT' |
                         str_detect(high_school_code, '^45', negate = TRUE))
 ) %>%
-  fn_return_data('Demographics', 'Undocumented students not from UT or from a UT HS', 'spbpers', 'spbpers_citz_code') %>%
+  fn_return_data('Demographics', 'Undocumented student not from UT or from a high school outside of UT', 'spbpers', 'spbpers_citz_code') %>%
   select(all_of(student_columns01), citz_code, admit_state, high_school_code, high_school_desc, all_of(student_columns02), all_of(student_columns03))
 
 

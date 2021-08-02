@@ -279,7 +279,7 @@ if(nrow(demo_check_12) > 0) {
 
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE, fig.align='left'}
 if(nrow(demo_check_13) > 0) {
-  mkd_table(demo_check_13, "Citizenship", unique(demo_check_13$error_message)) %>%
+  mkd_table(demo_check_13, "Undocumented Students", unique(demo_check_13$error_message)) %>%
     cols_label(term = md("**Term**"),
                banner_id = md("**Student ID**"),
                first_name = md("**First Name**"),

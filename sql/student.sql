@@ -57,7 +57,7 @@
                       gorvisa_vtyp_code AS visa_type,
                       gorvisa_visa_expire_date AS visa_expire_date,
                       e2.sorhsch_graduation_date AS high_school_grad_date,
-                      e2.sorhsch_pidm AS high_school_code,
+                      e2.sorhsch_sbgi_code AS high_school_code,
                       e3.stvsbgi_desc AS high_school_desc,
                       f_calculate_age(SYSDATE, spbpers_birth_date, spbpers_dead_date) AS age,
                       sabsupl_cnty_code_admit AS admit_county,
