@@ -87,11 +87,10 @@ demo_check_11 <- filter(sorhsch_sql, !is.na(sorhsch_sql$hs_code)) %>%
 
 #Demographics - US non citzen nationals
 demo_check_12 <- filter(student_sql, 
-                        (citz_code != '5' & 
+                       (citz_code != '5' & 
                         admit_state == 'AS') | 
-                        (citz_code == '5' &
-                        admit_state != 'AS')
-                        ) %>%
+                       (citz_code == '5' &
+                        admit_state != 'AS')) %>%
   fn_return_data('Demographics', 'Incorrect citizen code assigned', 'spbpers', 'spbpers_citz_code') %>%
   select(all_of(student_columns01), citz_code, admit_state, all_of(student_columns02), all_of(student_columns03))
 

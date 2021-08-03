@@ -45,6 +45,10 @@ mkd_table <- function(err_data, title, subtitle) {
     table.align = "left",
     table.width = pct(100)
   ) %>%
+#  tab_style(
+#    cell_text(color = "red"),
+#    locations = cells_body(columns = term)
+#  ) %>%
     cols_align(
       align = "auto",
       columns = everything()
