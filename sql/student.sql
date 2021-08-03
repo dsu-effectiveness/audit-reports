@@ -110,11 +110,15 @@
                            MIN(stvterm_start_date) AS shrtgpa_first_term_enrolled_start_date
                       FROM shrtgpa a
            LEFT JOIN stvterm b ON b.stvterm_code = a.shrtgpa_term_code
+           LEFT JOIN (SELECT MAX(sorhsch_graduation_date) AS high_school_grad_date,
+                              sorhsch_pidm
+                         FROM sorhsch
+                     GROUP BY sorhsch_pidm) c ON c.sorhsch_pidm = a.shrtgpa_pidm
                WHERE shrtgpa_term_code < (SELECT dsc.f_get_term(SYSDATE,'nterm') FROM dual) -- Current Term
                  AND shrtgpa_gpa_type_ind = 'I'
+                 AND stvterm_start_date > c.high_school_grad_date
             GROUP BY shrtgpa_pidm, shrtgpa_levl_code) l ON l.shrtgpa_pidm = a.sfrstcr_pidm
                                                        AND l.shrtgpa_levl_code = a.sfrstcr_levl_code
-                                                       AND e2.sorhsch_graduation_date < shrtgpa_first_term_enrolled_start_date
            LEFT JOIN (SELECT DISTINCT sfrstcr_pidm,
                                       sfrstcr_levl_code,
                                       MAX(sfrstcr_term_code) AS sfrstcr_last_term_enrolled,
@@ -124,11 +128,15 @@
                                       MIN(stvterm_start_date) AS sfrstcr_first_term_enrolled_start_date
                                  FROM sfrstcr a
                             LEFT JOIN stvterm b ON b.stvterm_code = a.sfrstcr_term_code
+                            LEFT JOIN (SELECT MAX(sorhsch_graduation_date) AS high_school_grad_date,
+                                              sorhsch_pidm
+                                         FROM sorhsch
+                                     GROUP BY sorhsch_pidm) c ON c.sorhsch_pidm = a.sfrstcr_pidm
                                 WHERE sfrstcr_rsts_code IN (SELECT DISTINCT stvrsts_code FROM stvrsts WHERE stvrsts_incl_sect_enrl = 'Y')
+                                  AND stvterm_start_date > c.high_school_grad_date
                                   AND sfrstcr_term_code < (SELECT dsc.f_get_term(SYSDATE,'nterm') FROM dual) -- Current Term
                              GROUP BY sfrstcr_pidm, sfrstcr_levl_code) l ON l.sfrstcr_pidm = a.sfrstcr_pidm
                                                                         AND l.sfrstcr_levl_code = a.sfrstcr_levl_code
-                                                                        AND e2.sorhsch_graduation_date < sfrstcr_first_term_enrolled_start_date
             /* Primary Major */
             LEFT JOIN (SELECT sgvacur_pidm,
                        sgvacur_majr_code_1 AS major_code,

@@ -45,10 +45,30 @@ mkd_table <- function(err_data, title, subtitle) {
     table.align = "left",
     table.width = pct(100)
   ) %>%
-#  tab_style(
-#    cell_text(color = "red"),
-#    locations = cells_body(columns = term)
-#  ) %>%
+  tab_style(
+    style = list(
+      cell_text(color = "#4d6910")
+    ),
+    locations = cells_body(
+      columns = term,
+      rows = term == '202120')
+  ) %>%
+  tab_style(
+    style = list(
+      cell_text(color = "#ff1700")
+    ),
+    locations = cells_body(
+      columns = term,
+      rows = term == '202130')
+  ) %>%
+  tab_style(
+    style = list(
+      cell_text(color = "blue")
+    ),
+    locations = cells_body(
+      columns = term,
+      rows = term == '202140')
+  ) %>%
     cols_align(
       align = "auto",
       columns = everything()
