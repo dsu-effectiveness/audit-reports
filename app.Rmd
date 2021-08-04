@@ -47,27 +47,27 @@ mkd_table <- function(err_data, title, subtitle) {
   ) %>%
   tab_style(
     style = list(
-      cell_text(color = "#4d6910")
+      cell_text(color = "#2ECC40")
     ),
     locations = cells_body(
       columns = term,
-      rows = term == '202120')
+      rows = season == "Summer")
   ) %>%
   tab_style(
     style = list(
-      cell_text(color = "#ff1700")
+      cell_text(color = "#FF4136")
     ),
     locations = cells_body(
       columns = term,
-      rows = term == '202130')
+      rows = season == 'Spring')
   ) %>%
   tab_style(
     style = list(
-      cell_text(color = "blue")
+      cell_text(color = "#0074D9")
     ),
     locations = cells_body(
       columns = term,
-      rows = term == '202140')
+      rows = season == 'Fall')
   ) %>%
     cols_align(
       align = "auto",
@@ -112,7 +112,7 @@ if(nrow(demo_check_01) > 0) {
              banner_table = md("**Table Name**"),
              banner_column = md("**Column Name**")
              ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -130,7 +130,7 @@ mkd_table(demo_check_02, "County - US", unique(demo_check_02$error_message)) %>%
                banner_table = md("**Table Name**"),
                banner_column = md("**Column Name**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -146,7 +146,7 @@ mkd_table(demo_check_03, "State", unique(demo_check_03$error_message)) %>%
                banner_table = md("**Table Name**"),
                banner_column = md("**Column Name**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -164,7 +164,7 @@ if(nrow(demo_check_04) > 0) {
                banner_table = md("**Table Name**"),
                banner_column = md("**Column Name**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
     }
 ```
 
@@ -180,7 +180,7 @@ if(nrow(demo_check_05) > 0) {
                banner_table = md("**Table Name**"),
                banner_column = md("**Column Name**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
     }
 ```
 
@@ -197,7 +197,7 @@ if(nrow(demo_check_06) > 0) {
                banner_table = md("**Table Name**"),
                banner_column = md("**Column Name**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -215,7 +215,7 @@ if(nrow(demo_check_07) > 0) {
                banner_table = md("**Table Name**"),
                banner_column = md("**Column Name**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -231,7 +231,7 @@ if(nrow(demo_check_08) > 0) {
                banner_table = md("**Table Name**"),
                banner_column = md("**Column Name**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -247,7 +247,7 @@ if(nrow(demo_check_09) > 0) {
                banner_table = md("**Table Name**"),
                banner_column = md("**Column Name**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -264,7 +264,7 @@ if(nrow(demo_check_10) > 0) {
                banner_table = md("**Table Name**"),
                banner_column = md("**Column Name**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -297,7 +297,7 @@ if(nrow(demo_check_12) > 0) {
                banner_table = md("**Table Name**"),
                banner_column = md("**Column Name**")
                ) %>%
-    cols_hide(c("error_message"))
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -315,7 +315,7 @@ if(nrow(demo_check_13) > 0) {
                banner_table = md("**Table Name**"),
                banner_column = md("**Column Name**")
                ) %>%
-    cols_hide(c("error_message"))
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -336,11 +336,12 @@ mkd_table(int_error_01, "Visa Type & Citizenship Code", unique(int_error_01$erro
                  last_name = md("**Last Name**"),
                  citz_code = md("**Citizen Code**"),
                  visa_type = md("**Visa Type**"),
+                 nationality_desc = md("**Nationality**"),
                  error_message = md("**Error Message**"),
                  banner_table = md("**Table Name**"),
                  banner_column = md("**Column Name**")
                  ) %>%
-      cols_hide(error_message)
+      cols_hide(c("error_message", "season"))
       }
 ```
 
@@ -365,7 +366,7 @@ if(nrow(programs_check_01) > 0) {
                banner_table = md("**Table Name**"),
                banner_column = md("**Column Name**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
     }
 ```
 
@@ -384,7 +385,7 @@ if(nrow(programs_check_02) > 0) {
                banner_table = md("**Table Name**"),
                banner_column = md("**Column Name**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -402,7 +403,7 @@ if(nrow(programs_check_03) > 0) {
                banner_table = md("**Table Name**"),
                banner_column = md("**Column Name**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -427,7 +428,7 @@ if(nrow(stype_check_01) > 0) {
                high_school_grad_date = md("**HS Graduation Date**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -444,7 +445,7 @@ if(nrow(stype_check_02) > 0) {
                entry_action= md("**Entry Action**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -461,7 +462,7 @@ if(nrow(stype_check_03) > 0) {
                entry_action = md("**Entry Action**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -477,7 +478,7 @@ if(nrow(stype_check_04) > 0) {
                entry_action = md("**Entry Action**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -493,7 +494,7 @@ if(nrow(stype_check_05) > 0) {
                entry_action = md("**Entry Action**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -510,7 +511,7 @@ if(nrow(stype_check_06) > 0) {
                entry_action = md("**Entry Action**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -527,7 +528,7 @@ if(nrow(stype_check_07) > 0) {
                entry_action = md("**Entry Action**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -543,7 +544,7 @@ if(nrow(stype_check_08) > 0) {
                entry_action = md("**Entry Action**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -560,7 +561,7 @@ if(nrow(stype_check_09) > 0) {
                entry_action = md("**Entry Action**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -597,7 +598,7 @@ if(nrow(stype_check_11) > 0) {
                entry_action = md("**Entry Action**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -614,7 +615,7 @@ if(nrow(stype_check_12) > 0) {
                entry_action = md("**Entry Action**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -630,7 +631,7 @@ if(nrow(stype_check_13) > 0) {
                entry_action = md("**Entry Action**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -644,7 +645,7 @@ if(nrow(stype_check_14) > 0) {
                student_level = md("**Student Level**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -670,7 +671,7 @@ if(nrow(crse_check_01) > 0) {
                enrollment = md("**Enrollment**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -686,7 +687,7 @@ if(nrow(crse_check_02) > 0) {
                start_time_1 = md("**Start Time**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message) %>%
+    cols_hide(c("error_message", "season")) %>%
     cols_align(align = "right", columns = start_time_1)
 }
 ```
@@ -703,7 +704,7 @@ if(nrow(crse_check_03) > 0) {
                start_time_1 = md("**Start Time**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -719,7 +720,7 @@ if(nrow(crse_check_04) > 0) {
                enrollment = md("**Enrollment**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -735,7 +736,7 @@ if(nrow(crse_check_04) > 0) {
 #                enrollment = md("**Enrollment**"),
 #                error_message = md("**Error Message**")
 #                ) %>%
-#     cols_hide(error_message)
+#     cols_hide(c("error_message", "season"))
 # }
 ```
 
@@ -752,7 +753,7 @@ if(nrow(crse_check_06) > 0) {
                instruction_method = md("**Instruction Method**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -769,7 +770,7 @@ if(nrow(crse_check_07) > 0) {
                room_code_1 = md("**Room**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -799,7 +800,7 @@ if(nrow(schd_check_01) > 0) {
                other_hours = md("**Other Hours**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -819,7 +820,7 @@ if(nrow(schd_check_02) > 0) {
                other_hours = md("**Other Hours**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -839,7 +840,7 @@ if(nrow(schd_check_03) > 0) {
                other_hours = md("**Other Hours**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -859,7 +860,7 @@ if(nrow(schd_check_04) > 0) {
                other_hours = md("**Other Hours**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -880,7 +881,7 @@ if(nrow(schd_check_05) > 0) {
                other_hours = md("**Other Hours**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -900,7 +901,7 @@ if(nrow(schd_check_06) > 0) {
                other_hours = md("**Other Hours**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -920,7 +921,7 @@ if(nrow(schd_check_07) > 0) {
                other_hours = md("**Other Hours**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -946,7 +947,7 @@ if(nrow(ie_check_01) > 0) {
                last_term_enrolled = md("**Last Term Enrolled**"),
                error_message = md("**Error Message**")
                ) %>%
-    cols_hide(error_message)
+    cols_hide(c("error_message", "season"))
 }
 ```
 

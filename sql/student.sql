@@ -32,6 +32,11 @@
                       swvstdn_blck_code AS block,
                       SYSDATE AS daterun,
                       sfrstcr_term_code AS term,
+                      CASE
+                        WHEN SUBSTR(sfrstcr_term_code, 5,1) = '4' THEN 'Fall'
+                        WHEN SUBSTR(sfrstcr_term_code, 5,1) = '3' THEN 'Summer'
+                        WHEN SUBSTR(sfrstcr_term_code, 5,1) = '2' THEN 'Spring'
+                      END AS season,
                       stvterm_desc AS term_desc,
                       stvterm_start_date AS term_start_date,
                       a.attempted_hours,
@@ -63,6 +68,8 @@
                       sabsupl_cnty_code_admit AS admit_county,
                       sabsupl_stat_code_admit AS admit_state,
                       sabsupl_natn_code_admit AS admit_country,
+                      sabsupl_natn_code_birth AS nationality_code,
+                      stvnatn_nation AS nationality_desc,
                       sabsupl_appl_no AS app_num,
                       COALESCE(shrtgpa_first_term_enrolled, sfrstcr_first_term_enrolled) AS first_term_enrolled,
                       COALESCE(shrtgpa_first_term_enrolled_start_date, sfrstcr_first_term_enrolled_start_date) AS first_term_enrolled_start_date,
@@ -98,6 +105,7 @@
                       GROUP BY sabsupl_pidm) f ON f.sabsupl_pidm = a.sfrstcr_pidm
             LEFT JOIN sabsupl g ON g.sabsupl_pidm = f.sabsupl_pidm
                   AND g.sabsupl_appl_no||g.sabsupl_term_code_entry = f.sabsupl_key
+            LEFT JOIN stvnatn g2 ON g2.stvnatn_code = g.sabsupl_natn_code_birth
             LEFT JOIN gorvisa h
                    ON h.gorvisa_pidm = a.sfrstcr_pidm
             /* Enrollment History: first check SHRTGPA, then check in SFRSTCR */

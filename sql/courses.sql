@@ -1,4 +1,9 @@
          SELECT DISTINCT ssbsect_term_code AS term,
+                CASE
+                   WHEN SUBSTR(ssbsect_term_code, 5,1) = '4' THEN 'Fall'
+                   WHEN SUBSTR(ssbsect_term_code, 5,1) = '3' THEN 'Summer'
+                   WHEN SUBSTR(ssbsect_term_code, 5,1) = '2' THEN 'Spring'
+                END AS season,
                 ssbsect_crn AS crn,
                 ssbsect_subj_code AS subject_code,
                 ssbsect_crse_numb AS course_number,
@@ -45,4 +50,5 @@
             AND camp_code != 'XXX'
             AND (ssbsect_term_code = (SELECT dsc.f_get_term(SYSDATE, 'nterm') - 10 AS prior_term FROM dual)
              OR ssbsect_term_code = (SELECT dsc.f_get_term(SYSDATE, 'nterm') AS current_term FROM dual)
-             OR ssbsect_term_code = (SELECT dsc.f_get_term(SYSDATE, 'nterm') + 10 AS future_term FROM dual));
+             OR ssbsect_term_code = (SELECT dsc.f_get_term(SYSDATE, 'nterm') + 10 AS future_term FROM dual)
+             OR ssbsect_term_code = (SELECT dsc.f_get_term(SYSDATE, 'nterm') - 10 + 100 AS future_term_2 FROM dual));

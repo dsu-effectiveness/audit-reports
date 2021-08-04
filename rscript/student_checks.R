@@ -23,7 +23,7 @@ fn_return_data <- function(data, category, message, table_name, column_name) {
 }
 
 #Variables
-student_columns01 <- c('term', 'banner_id', 'first_name', 'last_name')
+student_columns01 <- c('term', 'season', 'banner_id', 'first_name', 'last_name')
 student_columns02 <- c('error_message')
 student_columns03 <- c('banner_table', 'banner_column')
 
@@ -115,7 +115,7 @@ int_error_01 <- filter(student_sql,(
   & (visa_expire_date > today | is.na(visa_expire_date))
 ) %>%
 fn_return_data('Demographics', 'Invalid Visa Type or Citz Code', 'spbpers, gorvisa', 'spbpers_citz_code, gorvisa_vtyp_code') %>%
-  select(all_of(student_columns01), citz_code, visa_type, all_of(student_columns02), all_of(student_columns03))
+  select(all_of(student_columns01), citz_code, visa_type, nationality_desc, all_of(student_columns02), all_of(student_columns03))
 
 #PROGRAM CHECKS
 programs_check_01 <- filter(student_sql, 
@@ -132,6 +132,7 @@ programs_check_02 <- filter(student_sql, !cur_prgm %in% c('ND-CONC','ND-SA','ND-
   select(all_of(student_columns01), student_type, entry_action, cur_prgm, high_school_grad_date, all_of(student_columns02), all_of(student_columns03))
 
 #Programs - Blank Programs
+#Identify Students enrolled in Community Ed Courses
 programs_check_03 <- filter(student_sql, is.na(cur_prgm)) %>%
   fn_return_data('Programs', 'Blank Program', 'sorlcur', 'sorlcur_program') %>%
   select(all_of(student_columns01), degree, major_code, cur_prgm, all_of(student_columns02), all_of(student_columns03))
@@ -152,7 +153,11 @@ stype_check_02 <- filter(student_sql, term_start_date > high_school_grad_date & 
   fn_return_data('Student Type', 'Start Term Date is Greater Than HS Grad Date', 'shrtgpa, sfrstcr', 'shrtgpa_term_code, sfrstcr_term_code') %>%
   select(all_of(student_columns01), term_start_date, high_school_grad_date, student_type, entry_action, all_of(student_columns02))
 
-stype_check_03 <- filter(student_sql, student_type == 'H' & !cur_prgm %in% c('ND-ACE', 'ND-CONC', 'ND-SA')) %>%
+stype_check_03 <- filter(student_sql, 
+                         student_type == 'H' & 
+                         !cur_prgm %in% c('ND-ACE', 'ND-CONC', 'ND-SA') &
+                         (season != 'Summer' | cur_prgm != 'ND-CE')
+                         ) %>%
   fn_return_data('Student Type', 'High School Student not in a HS Program') %>%
   select(all_of(student_columns01), cur_prgm, high_school_grad_date, student_type, entry_action, all_of(student_columns02))
 
@@ -183,7 +188,7 @@ stype_check_06 <- filter(student_sql,
                          student_level == 'UG' & student_type %in% c('F', 'N') & !is.na(first_term_enrolled) & first_term_enrolled < term & first_term_enrolled_start_date > high_school_grad_date |
                          student_level == 'UG' & entry_action %in% c('FF', 'FH') & !is.na(first_term_enrolled) & first_term_enrolled < term & first_term_enrolled_start_date > high_school_grad_date
                          ) %>%
-  fn_return_data('Student Type', 'Student has already attended') %>%
+  fn_return_data('Student Type', 'Student has already attended.  Student Type must be C or R.') %>%
   select(all_of(student_columns01), student_level, first_term_enrolled, student_type, entry_action, all_of(student_columns02))
 
 stype_check_07 <- filter(student_sql, 
@@ -204,7 +209,7 @@ stype_check_08 <- select(student_sql, everything()) %>%
 stype_check_09 <- filter(student_sql, 
                          student_level == 'UG' & student_type %in% c('T', 'F', 'N') & !is.na(sgrchrt_chrt_code) & sgrchrt_term_code_eff != term |
                          student_level == 'UG' & entry_action %in% c('FF', 'FH') & !is.na(sgrchrt_chrt_code) & sgrchrt_term_code_eff != term) %>%
-  fn_return_data('Student Type', 'Student has a cohort record') %>%
+  fn_return_data('Student Type', 'Student has a cohort record.  Student Type must be C or R.') %>%
   select(all_of(student_columns01), student_type, sgrchrt_chrt_code, last_term_enrolled, entry_action, all_of(student_columns02))
 
 stype_check_10 <- select(student_sql, everything()) %>%
