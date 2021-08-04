@@ -341,7 +341,7 @@ mkd_table(int_error_01, "Visa Type & Citizenship Code", unique(int_error_01$erro
                  banner_table = md("**Table Name**"),
                  banner_column = md("**Column Name**")
                  ) %>%
-      cols_hide(c("error_message", "season"))
+      cols_hide(c("error_message", "nationality_desc", "season"))
       }
 ```
 
