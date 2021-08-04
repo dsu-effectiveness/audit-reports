@@ -2,15 +2,14 @@ library(tidyverse)
 library(lubridate)
 library(janitor)
 
-source(here::here('rscript', 'dsu_odbc_prod_connection_object.R'))
-
-courses_sql <- load_data_from_rds('courses.RData')
+#source(here::here('rscript', 'dsu_odbc_prod_connection_object.R'))
+#courses_sql <- load_data_from_rds('courses.RData')
 
 courses_columns01 <- c('term', 'season', 'crn', 'subject_code', 'course_number', 'section_number')
 courses_columns02 <- c('enrollment', 'error_message')
 
 #Function Definitions
-fn_return_data <- function(data, category, message, table_name, column_name) {
+fn_return_data <- function(data, category, message, table_name="", column_name="") {
   output_data <- {{data}} %>%
     mutate(category = {{category}},
            error_message = {{message}},

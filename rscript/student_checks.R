@@ -2,15 +2,13 @@ library(tidyverse)
 library(lubridate)
 library(janitor)
 
-source(here::here('rscript', 'dsu_odbc_prod_connection_object.R'))
-
-
-student_sql <- load_data_from_rds('students.RData')
-spbpers_sql <- load_data_from_rds('spbpers.RData')
-sorhsch_sql <- load_data_from_rds('sorhsch.RData')
+#source(here::here('rscript', 'dsu_odbc_prod_connection_object.R'))
+#student_sql <- load_data_from_rds('students.RData')
+#spbpers_sql <- load_data_from_rds('spbpers.RData')
+#sorhsch_sql <- load_data_from_rds('sorhsch.RData')
 
 #Function Definitions
-fn_return_data <- function(data, category, message, table_name, column_name) {
+fn_return_data <- function(data, category, message, table_name="", column_name="") {
   output_data <- {{data}} %>%
     mutate(category = {{category}},
            error_message = {{message}},
@@ -66,7 +64,7 @@ demo_check_07 <- filter(student_sql, birth_date >= high_school_grad_date)%>%
 demo_check_08 <- filter(spbpers_sql, !is.na(spbpers_sql$ssn)) %>%
   get_dupes(ssn) %>%
   fn_return_data('Demographics', 'Duplicate SSN', 'spbpers', 'spbpers_ssn') %>%
-  select(banner_id, first_name, last_name, ssn_masked, birth_date, all_of(student_columns02), all_of(student_columns03)) %>%
+  select(term, banner_id, first_name, last_name, ssn_masked, birth_date, all_of(student_columns02), all_of(student_columns03)) %>%
   arrange(ssn_masked)
 
 #Demographics - Null citizenship
@@ -83,7 +81,7 @@ demo_check_10 <- filter(student_sql, is.na(high_school_grad_date) & student_type
 demo_check_11 <- filter(sorhsch_sql, !is.na(sorhsch_sql$hs_code)) %>%
   get_dupes(sorhsch_pidm) %>%
   fn_return_data('Demographics', 'Duplicate High School Found', 'sorhsch', 'sorhsch_pidm') %>%
-  select(banner_id, first_name, last_name, hs_code, hs_description, hs_graduation_date, all_of(student_columns02), all_of(student_columns03), dupe_count)
+  select(term, banner_id, first_name, last_name, hs_code, hs_description, hs_graduation_date, all_of(student_columns02), all_of(student_columns03), dupe_count)
 
 #Demographics - US non citzen nationals
 demo_check_12 <- filter(student_sql, 
@@ -141,8 +139,8 @@ programs_check_03 <- filter(student_sql, is.na(cur_prgm)) %>%
 #STUDENT TYPE CHECKS
 
 #Student Type - Checks to make sure student is returning student
-stype_check_01 <- filter(student_sql, 
-                         student_type == 'R' & 
+stype_check_01 <- filter(student_sql,
+                         student_type == 'R' &
                          is.na(first_term_enrolled_start_date)) %>%
   fn_return_data('Student Type', 'First term enrolled is blank') %>%
   select(all_of(student_columns01), student_type, entry_action, first_term_enrolled_start_date, high_school_grad_date, all_of(student_columns02))
