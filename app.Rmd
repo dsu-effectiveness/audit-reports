@@ -232,7 +232,7 @@ if(nrow(demo_check_08) > 0) {
                banner_table = md("**Table Name**"),
                banner_column = md("**Column Name**")
                ) %>%
-    cols_hide(c("error_message", "season"))
+    cols_hide(c("error_message", "term", "season"))
 }
 ```
 
@@ -282,7 +282,7 @@ if(nrow(demo_check_11) > 0) {
                banner_column = md("**Column Name**"),
                dupe_count = md("**Count**")
                ) %>%
-    cols_hide(c("error_message", "banner_table", "banner_column"))
+    cols_hide(c("error_message", "banner_table", "banner_column", "term", "season"))
 }
 ```
 

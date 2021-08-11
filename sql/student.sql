@@ -1,5 +1,45 @@
-
- WITH cte_enrolled AS (SELECT
+/* Sets current term and calculates prior, next term */
+WITH cte_term AS (SELECT x.stvterm_code,
+                          x.stvterm_desc,
+                          x.season,
+                          stvterm_code + term_cal_future AS next_term,
+                          stvterm_code + term_cal_future + term_cal_future_2 AS next_term_2,
+                          stvterm_code - term_cal_prior AS prior_term,
+                          stvterm_code - term_cal_prior - term_cal_prior_2 AS prior_term_2,
+                          CASE
+                             WHEN dsc.f_get_term(SYSDATE, 'nterm') = stvterm_code THEN 1 ELSE 0 END AS current_term_ind
+                     FROM (SELECT a.stvterm_code,
+                                  a.stvterm_desc,
+                                  CASE
+                                     WHEN SUBSTR(stvterm_code, 5, 1) = '4' THEN 'Fall'
+                                     WHEN SUBSTR(stvterm_code, 5, 1) = '3' THEN 'Summer'
+                                     WHEN SUBSTR(stvterm_code, 5, 1) = '2' THEN 'Spring'
+                                     END AS season,
+                                  CASE
+                                     WHEN SUBSTR(stvterm_code, 5, 1) = '4' THEN 80
+                                     WHEN SUBSTR(stvterm_code, 5, 1) = '3' THEN 10
+                                     WHEN SUBSTR(stvterm_code, 5, 1) = '2' THEN 10
+                                     END AS term_cal_future,
+                                  CASE
+                                     WHEN SUBSTR(stvterm_code, 5, 1) = '4' THEN 10
+                                     WHEN SUBSTR(stvterm_code, 5, 1) = '3' THEN 80
+                                     WHEN SUBSTR(stvterm_code, 5, 1) = '2' THEN 10
+                                     END AS term_cal_future_2,
+                                  CASE
+                                     WHEN SUBSTR(stvterm_code, 5, 1) = '4' THEN 10
+                                     WHEN SUBSTR(stvterm_code, 5, 1) = '3' THEN 10
+                                     WHEN SUBSTR(stvterm_code, 5, 1) = '2' THEN 80
+                                     END AS term_cal_prior,
+                                  CASE
+                                     WHEN SUBSTR(stvterm_code, 5, 1) = '4' THEN 10
+                                     WHEN SUBSTR(stvterm_code, 5, 1) = '3' THEN 80
+                                     WHEN SUBSTR(stvterm_code, 5, 1) = '2' THEN 10
+                                     END AS term_cal_prior_2
+                             FROM stvterm a
+                            WHERE stvterm_code > '200220'
+                              AND stvterm_code != '999999'
+                            ORDER BY stvterm_code) x),
+      cte_enrolled AS (SELECT
                           sfrstcr_pidm,
                           sfrstcr_term_code,
                           sfrstcr_levl_code,
@@ -12,15 +52,13 @@
                      FROM sfrstcr a
                INNER JOIN saturn.stvrsts b
                        ON b.stvrsts_code = a.sfrstcr_rsts_code
-                    WHERE (sfrstcr_term_code = (SELECT dsc.f_get_term(SYSDATE,'nterm') - 10 AS prior_term FROM dual)
-                       OR sfrstcr_term_code = (SELECT dsc.f_get_term(SYSDATE,'nterm')  AS current_term FROM dual)
-                       OR sfrstcr_term_code = (SELECT dsc.f_get_term(SYSDATE,'nterm') + 10 AS future_term FROM dual))
+                    WHERE sfrstcr_term_code BETWEEN (SELECT prior_term FROM cte_term WHERE current_term_ind = 1) AND (SELECT next_term FROM cte_term WHERE current_term_ind = 1)
                       AND stvrsts_incl_sect_enrl = 'Y'
                       AND sfrstcr_camp_code != 'XXX'
                  GROUP BY sfrstcr_pidm,
                           sfrstcr_term_code,
-                          sfrstcr_levl_code
- )
+                          sfrstcr_levl_code)
+
                 SELECT DISTINCT
                       a.sfrstcr_pidm AS pidm,
                       spriden_id AS banner_id,

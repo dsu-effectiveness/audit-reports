@@ -11,6 +11,7 @@
                       AND sfrstcr_camp_code != 'XXX')
 
          SELECT NULL AS term,
+                NULL AS season,
                 spbpers_pidm AS pidm,
                 spriden_id AS banner_id,
                 spriden_first_name AS first_name,
