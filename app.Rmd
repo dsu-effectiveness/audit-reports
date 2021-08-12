@@ -4,10 +4,8 @@ output:
     css: !expr here::here("www", "style.css")
 pagetitle: "Audit Reports"
 resource_files:
-- data/*
 - rscript/*
 - sensitive/*
-- sql/*
 - www/*
 ---
 

@@ -2,11 +2,6 @@ library(tidyverse)
 library(lubridate)
 library(janitor)
 
-# source(here::here('rscript', 'dsu_odbc_prod_connection_object.R'))
-# student_sql <- load_data_from_rds('students.RData')
-# spbpers_sql <- load_data_from_rds('spbpers.RData')
-# sorhsch_sql <- load_data_from_rds('sorhsch.RData')
-
 #Function Definitions
 fn_return_data <- function(data, category, message, table_name="", column_name="") {
   output_data <- {{data}} %>%
