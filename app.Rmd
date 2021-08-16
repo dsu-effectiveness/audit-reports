@@ -1,7 +1,5 @@
 ---
 output: 
-  html_document:
-    css: !expr here::here("www", "style.css")
 pagetitle: "Audit Reports"
 resource_files:
 - rscript/*
@@ -70,10 +68,27 @@ mkd_table <- function(err_data, title, subtitle) {
     cols_align(
       align = "auto",
       columns = everything()
+    ) %>%
+    opt_css(
+      css = "
+      .gt_title {
+                  font-size: 1.2em !important;
+                  font-weight: 600 !important;
+                }
+                
+                .gt_subtitle {
+                  color: red !important;
+                  font-size: 1em !important;
+                }
+                
+                .gt_table:not(:first-child) {
+                  margin-bottom: 2em; 
+                }
+      "
     )
 }
 
-# this function controsl the download data button
+# this function controls the download data button
 download_data <- function(list_data, output_name){
   Filter(nrow, {{list_data}}) %>%
     download_this(
@@ -174,6 +189,7 @@ if(nrow(demo_check_05) > 0) {
                banner_id = md("**Student ID**"),
                first_name = md("**First Name**"),
                last_name = md("**Last Name**"),
+               admit_country = md("**Country**"),
                admit_state = md("**State**"),
                error_message = md("**Error Message**"),
                banner_table = md("**Table Name**"),
