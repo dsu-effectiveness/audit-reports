@@ -43,7 +43,7 @@ demo_check_04 <- filter(student_sql, admit_state == 'UT' & is.na(admit_county)) 
 #Demographics - Country
 demo_check_05 <- filter(student_sql, admit_state == 'UT' & is.na(admit_country)) %>%
   fn_return_data('Demographics', 'Missing Country', 'sabsupl', 'sabsupl_natn_code_admit') %>%
-  select(all_of(student_columns01), admit_state, all_of(student_columns02), all_of(student_columns03))
+  select(all_of(student_columns01), admit_country, admit_state, all_of(student_columns02), all_of(student_columns03))
 
 #Demographics - High School Code
 demo_check_06 <- filter(student_sql, is.na(high_school_code) & age < 20) %>%
