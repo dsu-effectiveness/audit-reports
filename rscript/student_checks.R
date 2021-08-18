@@ -125,8 +125,15 @@ programs_check_02 <- filter(student_sql, !cur_prgm %in% c('ND-CONC','ND-SA','ND-
   select(all_of(student_columns01), student_type, entry_action, cur_prgm, high_school_grad_date, all_of(student_columns02), all_of(student_columns03))
 
 #Programs - Blank Programs
-#Identify Students enrolled in Community Ed Courses
+#Identify Students enrolled in Community Ed Courses to exclude from this check
+community_ed_data <- filter(student_courses_sql, subject_code == 'CED') %>%
+  select(pidm)
+
 programs_check_03 <- filter(student_sql, is.na(cur_prgm)) %>%
+  mutate(
+    community_ed_match = community_ed_data$pidm %in% pidm
+  ) %>%
+  filter(!community_ed_match) %>%
   fn_return_data('Programs', 'Blank Program', 'sorlcur', 'sorlcur_program') %>%
   select(all_of(student_columns01), degree, major_code, cur_prgm, all_of(student_columns02), all_of(student_columns03))
 
@@ -163,7 +170,6 @@ stype_check_04 <- filter(student_sql, student_type == 'P' & !cur_prgm %in% c('ND
 stype_check_05 <- filter(student_sql, 
                          !student_level == 'GR' & student_type == '1' | #New GR
                          !student_level == 'GR' & student_type == '5' | #Continuing GR
-                          student_level == 'GR' & student_type == '5' & is.na(first_term_enrolled) |
                          !student_level == 'GR' & student_type == '2' | #Transfer GR
                          !student_level == 'GR' & student_type == '4' | #Readmit GR
                          !student_level == 'UG' & student_type == 'T' | #UG Transfers

@@ -20,6 +20,7 @@ board_register_rsconnect(key=api_key, server="https://data.dixie.edu")
 
 # pull data from pins (pin names set from original pins)
 student_sql <- pin_get("audit_reports_students_pin", board="rsconnect")
+student_courses_sql <- pin_get("audit_reports_student_courses_pin", board="rsconnect")
 courses_sql <- pin_get("audit_reports_courses_pin", board="rsconnect")
 spbpers_sql <- pin_get("audit_reports_spbpers_pin", board="rsconnect")
 sorhsch_sql <- pin_get("audit_reports_sorhsch_pin", board="rsconnect")
