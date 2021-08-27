@@ -35,8 +35,9 @@ crse_check_02 <- filter(courses_sql,
   fn_return_data('Courses', 'Evening course not in 50s Series Section') %>%
   select(all_of(courses_columns01), start_time_1, all_of(courses_columns02))
 
-crse_check_03 <- filter(courses_sql, active_ind == 'A' & is.na(budget_code)) %>%
-  fn_return_data('Courses', 'Missing schedule code') %>%
+crse_check_03 <- filter(courses_sql, active_ind == 'A' & is.na(budget_code) & subject_code != 'CED' |
+                        (!budget_code %in% c('BA','BC','BU','BV','BY','SD','SF','SM','SP','SQ') & subject_code != 'CED')) %>%
+  fn_return_data('Courses', 'Missing budget code') %>%
   select(all_of(courses_columns01), budget_code, all_of(courses_columns02))
 
 crse_check_04 <- filter(courses_sql, 
