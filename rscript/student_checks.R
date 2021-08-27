@@ -92,11 +92,17 @@ demo_check_13 <- filter(student_sql,
                         citz_code == '4' & 
                        (admit_state != 'UT' |
                         str_detect(high_school_code, '^45', negate = TRUE))
+                       
 ) %>%
   fn_return_data('Demographics', 'Undocumented student not from UT or from a high school outside of UT', 'spbpers', 'spbpers_citz_code') %>%
   select(all_of(student_columns01), citz_code, admit_state, high_school_code, high_school_desc, all_of(student_columns02), all_of(student_columns03))
 
-
+demo_check_14 <- filter(student_sql, age > '20' & entry_action %in% c('HS', 'FH') 
+                        | age <= 10
+                          | age >= 100) %>%
+  fn_return_data('Demographics', 'Double check age or entry action', 'sorhsch', 'sorhsch_graduation_date') %>%
+  select(all_of(student_columns01), age, high_school_grad_date, entry_action, all_of(student_columns02), all_of(student_columns03))
+	
 #INTERNATIONAL STUDENTS
 #Visa Errors
 today <- lubridate::now()
@@ -122,6 +128,10 @@ programs_check_01 <- filter(student_sql,
 #Programs - HS students with no ND-CONC
 programs_check_02 <- filter(student_sql, !cur_prgm %in% c('ND-CONC','ND-SA','ND-CE', 'ND-ACE') & entry_action == 'HS' & !is.na(cur_prgm)) %>%
   fn_return_data('Programs', 'Entry Action is HS and not a Non-Degree Program', 'sorlcur', 'sorlcur_program') %>%
+  select(all_of(student_columns01), student_type, entry_action, cur_prgm, high_school_grad_date, all_of(student_columns02), all_of(student_columns03))
+
+programs_check_02A <- filter(student_sql, cur_prgm %in% c('ND-CONC','ND-SA','ND-CE', 'ND-ACE') & !entry_action %in% c('HS','NM') & !is.na(cur_prgm)) %>%
+  fn_return_data('Programs', 'Entry Action is not HS and a Non-Degree Program', 'sorlcur', 'sorlcur_program') %>%
   select(all_of(student_columns01), student_type, entry_action, cur_prgm, high_school_grad_date, all_of(student_columns02), all_of(student_columns03))
 
 #Programs - Blank Programs
@@ -270,3 +280,4 @@ ie_check_01 <-  mutate(student_sql, entry_action_mapped = case_when(
     filter(entry_action_mapped != student_type) %>%
     fn_return_data('Student Type', 'Entry Action does not match student type') %>%
     select(all_of(student_columns01), student_type, entry_action, first_term_enrolled, last_term_enrolled, all_of(student_columns02))
+
