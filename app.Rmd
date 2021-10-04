@@ -351,6 +351,20 @@ if(nrow(demo_check_14) > 0) {
 }
 ```
 
+```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE, fig.align='left'}
+if(nrow(demo_check_15) > 0) {
+  mkd_table(demo_check_15, "SSID", unique(demo_check_15$error_message)) %>%
+    cols_label(banner_id = md("**Student ID**"),
+               first_name = md("**First Name**"),
+               last_name = md("**Last Name**"),
+               ssid = md("**SSID**"),
+               banner_table = md("**Table Name**"),
+               banner_column = md("**Column Name**")
+               ) %>%
+    cols_hide(c("error_message", "season", "term"))
+}
+```
+
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
 demo_list <- list(demo_check_01, demo_check_02, demo_check_03, demo_check_04, demo_check_05, demo_check_06, demo_check_07, demo_check_08, demo_check_09, demo_check_10, demo_check_11, demo_check_12, demo_check_13) 
 download_data(demo_list, 'demographics')
@@ -783,6 +797,7 @@ if(nrow(crse_check_06) > 0) {
                enrollment = md("**Enrollment**"),
                campus_code = md("**Campus**"),
                instruction_method = md("**Instruction Method**"),
+               budget_code = md("**Budget Code**"),
                error_message = md("**Error Message**")
                ) %>%
     cols_hide(c("error_message", "season"))
@@ -791,7 +806,26 @@ if(nrow(crse_check_06) > 0) {
 
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
 if(nrow(crse_check_07) > 0) {
-  mkd_table(crse_check_07, "Courses & Rooms", unique(crse_check_07$error_message)) %>%
+  mkd_table(crse_check_07, "Online Courses", unique(crse_check_07$error_message)) %>%
+    cols_label(term = md("**Term**"),
+               crn = md("**CRN**"),
+               subject_code = md("**Subject**"),
+               course_number = md("**Course**"),
+               section_number = md("**Section**"),
+               enrollment = md("**Enrollment**"),
+               campus_code = md("**Campus**"),
+               instruction_method = md("**Instruction Method**"),
+               budget_code = md("**Budget Code**"),
+               error_message = md("**Error Message**")
+               ) %>%
+    cols_hide(c("error_message", "season"))
+}
+```
+
+
+```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
+if(nrow(crse_check_08) > 0) {
+  mkd_table(crse_check_08, "Courses & Rooms", unique(crse_check_08$error_message)) %>%
     cols_label(term = md("**Term**"),
                crn = md("**CRN**"),
                subject_code = md("**Subject**"),

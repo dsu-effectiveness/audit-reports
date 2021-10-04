@@ -91,17 +91,21 @@ demo_check_12 <- filter(student_sql,
 demo_check_13 <- filter(student_sql, 
                         citz_code == '4' & 
                        (admit_state != 'UT' |
-                        str_detect(high_school_code, '^45', negate = TRUE))
-                       
-) %>%
-  fn_return_data('Demographics', 'Undocumented student not from UT or from a high school outside of UT', 'spbpers', 'spbpers_citz_code') %>%
-  select(all_of(student_columns01), citz_code, admit_state, high_school_code, high_school_desc, all_of(student_columns02), all_of(student_columns03))
+                        str_detect(high_school_code, '^45', negate = TRUE)))
 
+#Demographics - Age is outside of normal range
 demo_check_14 <- filter(student_sql, age > '20' & entry_action %in% c('HS', 'FH') 
                         | age <= 10
                           | age >= 100) %>%
   fn_return_data('Demographics', 'Double check age or entry action', 'sorhsch', 'sorhsch_graduation_date') %>%
   select(all_of(student_columns01), age, high_school_grad_date, entry_action, all_of(student_columns02), all_of(student_columns03))
+
+#Demographics - Duplicate SSIDs
+demo_check_15 <- goradid_sql %>%
+  get_dupes(ssid) %>%
+  fn_return_data('Demographics', 'Duplicate SSID', 'goradid', 'goradid_additional_id') %>%
+  select(term, season, banner_id, first_name, last_name, ssid, all_of(student_columns02), all_of(student_columns03)) %>%
+  arrange(ssid)
 	
 #INTERNATIONAL STUDENTS
 #Visa Errors
@@ -191,14 +195,32 @@ stype_check_05 <- filter(student_sql,
   fn_return_data('Student Type', 'Student level and student type does not align') %>%
   select(all_of(student_columns01), student_level, student_type, entry_action, all_of(student_columns02))
 
-stype_check_06 <- filter(student_sql, 
-                         student_level == 'GR' & student_type %in% c('1', '2') & !is.na(first_term_enrolled) & first_term_enrolled != term |
+#exclude student type for students that started in summer and enrolled in fall
+stype_check_06_summer <- filter(student_sql, season == 'Summer') %>%
+                         mutate(term = as.double(term)) %>%
+                         select(banner_id, student_type, term) %>%
+                         arrange(banner_id)
+
+stype_check_06_fall <- filter(student_sql, season == 'Fall') %>%
+  select(banner_id, student_type, term = prior_term) %>%
+                           arrange(banner_id)
+
+exclude_students <- intersect(stype_check_06_summer, stype_check_06_fall) %>%
+                            select(banner_id) %>%
+                            distinct() %>%
+                            arrange(banner_id)
+
+stype_check_06 <- filter(student_sql,
+                         (student_level == 'GR' & student_type %in% c('1', '2') & !is.na(first_term_enrolled) & first_term_enrolled != term |
                          student_level == 'UG' & student_type == 'T' & !is.na(first_term_enrolled) & first_term_enrolled != term |
                          student_level == 'UG' & student_type %in% c('F', 'N') & !is.na(first_term_enrolled) & first_term_enrolled < term & first_term_enrolled_start_date > high_school_grad_date |
-                         student_level == 'UG' & entry_action %in% c('FF', 'FH') & !is.na(first_term_enrolled) & first_term_enrolled < term & first_term_enrolled_start_date > high_school_grad_date
+                         student_level == 'UG' & entry_action %in% c('FF', 'FH') & !is.na(first_term_enrolled) & first_term_enrolled < term & first_term_enrolled_start_date > high_school_grad_date)
                          ) %>%
   fn_return_data('Student Type', 'Student has already attended.  Student Type must be C or R.') %>%
-  select(all_of(student_columns01), student_level, first_term_enrolled, student_type, entry_action, all_of(student_columns02))
+  select(all_of(student_columns01), student_level, first_term_enrolled, student_type, entry_action, all_of(student_columns02)) %>%
+  #filter students that started in summer as FT, TU and enrolled in fall
+  filter(!banner_id %in% c(exclude_students$banner_id))
+
 
 stype_check_07 <- filter(student_sql, 
                          student_level == 'GR' & student_type == '1' & !is.na(last_transfer_term) |

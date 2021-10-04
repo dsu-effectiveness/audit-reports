@@ -66,16 +66,29 @@ crse_check_04 <- filter(courses_sql,
 #   select(all_of(courses_columns01), occs_code, all_of(courses_columns02))
 
 crse_check_06 <- filter(courses_sql,
-                       (campus_code != 'O01' & str_detect(section_number, '^4') & instruction_method == 'I' |
-                       campus_code %in% c('O01', 'UOS') & str_detect(section_number, '^4') & instruction_method != 'I' |
-                       campus_code == 'O01' & str_detect(section_number, '^4', negate = TRUE) & instruction_method == 'I' |
-                       campus_code != 'O01' & str_detect(section_number, '^4', negate = TRUE) & instruction_method == 'I' |
-                       campus_code %in% c('O01', 'UOS') & str_detect(section_number, '^4', negate = TRUE) & instruction_method == 'I' |
-                       campus_code %in% c('O01', 'UOS') & str_detect(section_number, '4', negate = TRUE) & instruction_method != 'I')) %>%
-                fn_return_data('Courses', 'Online Error') %>%
-                select(all_of(courses_columns01), campus_code, instruction_method, all_of(courses_columns02))
+                        (  str_detect(budget_code, '^B') &
+                             (campus_code != 'O01' & str_detect(section_number, '^4') & instruction_method == 'I' |
+                                campus_code %in% c('O01', 'UOS') & str_detect(section_number, '^4') & instruction_method != 'I' |
+                                campus_code == 'O01' & str_detect(section_number, '^4', negate = TRUE) & instruction_method == 'I' |
+                                campus_code != 'O01' & str_detect(section_number, '^4', negate = TRUE) & instruction_method == 'I' |
+                                campus_code %in% c('O01', 'UOS') & str_detect(section_number, '^4', negate = TRUE) & instruction_method == 'I' |
+                                campus_code %in% c('O01', 'UOS') & str_detect(section_number, '4', negate = TRUE) & instruction_method != 'I'))) %>%
+  fn_return_data('Courses', 'Online Courses - Budget Related') %>%
+  select(all_of(courses_columns01), campus_code, instruction_method, budget_code, all_of(courses_columns02))
 
-crse_check_07 <- filter(courses_sql, 
+crse_check_07 <- filter(courses_sql,
+                        (  str_detect(budget_code, '^S') &
+                             (campus_code != 'O01' & str_detect(section_number, '^4') & instruction_method == 'I' |
+                                campus_code %in% c('O01', 'UOS') & str_detect(section_number, '^4') & instruction_method != 'I' |
+                                campus_code == 'O01' & str_detect(section_number, '^4', negate = TRUE) & instruction_method == 'I' |
+                                campus_code != 'O01' & str_detect(section_number, '^4', negate = TRUE) & instruction_method == 'I' |
+                                campus_code %in% c('O01', 'UOS') & str_detect(section_number, '^4', negate = TRUE) & instruction_method == 'I' |
+                                campus_code %in% c('O01', 'UOS') & str_detect(section_number, '4', negate = TRUE) & instruction_method != 'I'))) %>%
+  fn_return_data('Courses', 'Online Courses - Self Support') %>%
+  select(all_of(courses_columns01), campus_code, instruction_method, budget_code, all_of(courses_columns02))
+
+
+crse_check_08 <- filter(courses_sql, 
                         !instruction_method %in% c('I', 'E') &
                         !building_code_1 %in% c('VIRT', 'ONLINE') &
                         !is.na(building_code_1) &
@@ -83,6 +96,7 @@ crse_check_07 <- filter(courses_sql,
                         ) %>%
                 fn_return_data('Courses', 'Courses with no room specified') %>%
                 select(all_of(courses_columns01), building_code_1, room_code_1, all_of(courses_columns02))
+
 
 #Schedule Type
 schd_check_01 <- filter(courses_sql,
