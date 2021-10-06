@@ -365,8 +365,24 @@ if(nrow(demo_check_15) > 0) {
 }
 ```
 
+```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE, fig.align='left'}
+if(nrow(demo_check_16) > 0) {
+  mkd_table(demo_check_16, "SSID", unique(demo_check_16$error_message)) %>%
+    cols_label(term = md("**Term**"),
+               banner_id = md("**Student ID**"),
+               first_name = md("**First Name**"),
+               last_name = md("**Last Name**"),
+               ssid = md("**SSID**"),
+               ssid_length= md("**SSID Length**"),
+               banner_table = md("**Table Name**"),
+               banner_column = md("**Column Name**")
+               ) %>%
+    cols_hide(c("error_message", "season"))
+}
+```
+
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
-demo_list <- list(demo_check_01, demo_check_02, demo_check_03, demo_check_04, demo_check_05, demo_check_06, demo_check_07, demo_check_08, demo_check_09, demo_check_10, demo_check_11, demo_check_12, demo_check_13) 
+demo_list <- list(demo_check_01, demo_check_02, demo_check_03, demo_check_04, demo_check_05, demo_check_06, demo_check_07, demo_check_08, demo_check_09, demo_check_10, demo_check_11, demo_check_12, demo_check_13, demo_check_14, demo_check_15, demo_check_16) 
 download_data(demo_list, 'demographics')
 ```
 
@@ -841,8 +857,24 @@ if(nrow(crse_check_08) > 0) {
 ```
 
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
+if(nrow(crse_check_09) > 0) {
+  mkd_table(crse_check_09, "Course Programs", unique(crse_check_09$error_message)) %>%
+    cols_label(term = md("**Term**"),
+               crn = md("**CRN**"),
+               subject_code = md("**Subject**"),
+               course_number = md("**Course**"),
+               section_number = md("**Section**"),
+               enrollment = md("**Enrollment**"),
+               program_type = md("**Program Type**"),
+               error_message = md("**Error Message**")
+               ) %>%
+    cols_hide(c("error_message", "season"))
+}
+```
+
+```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
 course_list <- list(crse_check_01, crse_check_02, crse_check_03, crse_check_04, #crse_check_05,
-                      crse_check_06, crse_check_07) 
+                      crse_check_06, crse_check_07, crse_check_08, crse_check_09) 
 download_data(course_list, 'courses')
 ```
 

@@ -23,8 +23,6 @@ crse_check_01 <- filter(courses_sql, active_ind != 'A' & enrollment > 0) %>%
   fn_return_data('Courses', 'Cancelled course still has enrollments') %>%
   select(all_of(courses_columns01), all_of(courses_columns02))
 
-
-
 crse_check_02 <- filter(courses_sql,
                         active_ind == 'A' & 
                         start_time_1 > '1700' & 
@@ -96,6 +94,12 @@ crse_check_08 <- filter(courses_sql,
                         ) %>%
                 fn_return_data('Courses', 'Courses with no room specified') %>%
                 select(all_of(courses_columns01), building_code_1, room_code_1, all_of(courses_columns02))
+
+# Program Type is null
+crse_check_09 <- filter(courses_sql,
+                        is.na(program_type)) %>%
+                fn_return_data('Courses', 'Program type is blank') %>%
+                select(all_of(courses_columns01), program_type, all_of(courses_columns02))
 
 
 #Schedule Type

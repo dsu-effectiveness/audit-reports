@@ -106,6 +106,21 @@ demo_check_15 <- goradid_sql %>%
   fn_return_data('Demographics', 'Duplicate SSID', 'goradid', 'goradid_additional_id') %>%
   select(term, season, banner_id, first_name, last_name, ssid, all_of(student_columns02), all_of(student_columns03)) %>%
   arrange(ssid)
+
+#Demographics - SSID must be 7 digits and begin with 1 or 2
+demo_check_16 <- filter(student_sql, (!is.na(ssid) &
+                                      str_detect(ssid, '^1|^2', negate = TRUE)) |
+                                      str_length(ssid) != 7
+                                     
+                        )  %>%
+                  mutate(ssid_length = str_length(ssid),
+                         error_message = case_when(str_length(ssid) != 7 ~ 'SSID must be 7 digits',
+                                                   str_detect(ssid, '^1|^2', negate = TRUE) ~ 'SSID must begin with 1 or 2'
+                                                   )
+                                 
+                         ) %>%
+  fn_return_data('Demographics', error_message, 'goradid', 'goradid_additional_id') %>%
+  select(term, season, banner_id, first_name, last_name, ssid, ssid_length, all_of(student_columns02), all_of(student_columns03))
 	
 #INTERNATIONAL STUDENTS
 #Visa Errors
