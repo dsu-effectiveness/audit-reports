@@ -317,4 +317,3 @@ ie_check_01 <-  mutate(student_sql, entry_action_mapped = case_when(
     filter(entry_action_mapped != student_type) %>%
     fn_return_data('Student Type', 'Entry Action does not match student type') %>%
     select(all_of(student_columns01), student_type, entry_action, first_term_enrolled, last_term_enrolled, all_of(student_columns02))
-

@@ -95,13 +95,6 @@ crse_check_08 <- filter(courses_sql,
                 fn_return_data('Courses', 'Courses with no room specified') %>%
                 select(all_of(courses_columns01), building_code_1, room_code_1, all_of(courses_columns02))
 
-# Program Type is null
-crse_check_09 <- filter(courses_sql,
-                        is.na(program_type)) %>%
-                fn_return_data('Courses', 'Program type is blank') %>%
-                select(all_of(courses_columns01), program_type, all_of(courses_columns02))
-
-
 #Schedule Type
 schd_check_01 <- filter(courses_sql,
                         subject_code != 'CED' &
@@ -162,4 +155,8 @@ schd_check_07 <- filter(courses_sql,
                         fn_return_data('Schedule Type', paste(schedule_desc, ' type is not a lab course')) %>%
                         select(all_of(courses_columns01), schedule_code, credit_hours, lecture_hours, lab_hours, other_hours, all_of(courses_columns02))
 
-
+# Program Type is null
+schd_check_08 <- filter(courses_sql,
+                        is.na(program_type)) %>%
+  fn_return_data('Courses', 'Program type is blank') %>%
+  select(all_of(courses_columns01), program_type, all_of(courses_columns02))
