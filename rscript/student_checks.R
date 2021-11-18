@@ -78,7 +78,7 @@ demo_check_09 <- filter(student_sql,
                         str_detect(ssn, '[a-z]') |
                         str_length(ssn) < 9)  %>%
   fn_return_data('Demographics', 'Bad SSN Format', 'spbpers', 'spbpers_ssn') %>%
-  select(all_of(student_columns01), ssn, ssn_masked, all_of(student_columns02), all_of(student_columns03))
+  select(all_of(student_columns01), ssn_masked, all_of(student_columns02), all_of(student_columns03))
 
 
 #Demographics - Null citizenship

@@ -261,7 +261,7 @@ if(nrow(demo_check_09) > 0) {
                banner_table = md("**Table Name**"),
                banner_column = md("**Column Name**")
                ) %>%
-    cols_hide(c("error_message", "season", "ssn"))
+    cols_hide(c("error_message", "season"))
 }
 ```
 
@@ -1038,7 +1038,7 @@ if(nrow(schd_check_10) > 0) {
 ```
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
 schd_list <- list(schd_check_01, schd_check_02, schd_check_03, schd_check_04, schd_check_05,
-                      schd_check_06, schd_check_07) 
+                      schd_check_06, schd_check_07, schd_check_08, schd_check_09, schd_check_10) 
 download_data(schd_list, 'schedule_types')
 ```
 
@@ -1076,9 +1076,11 @@ if(nrow(ce_check_02) > 0) {
 }
 ```
 
+&nbsp;
+
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
 ce_list <- list(ce_check_01, ce_check_02) 
-download_data(demo_list, 'demographics')
+download_data(ce_list, 'HS Concurrent Enrollment')
 ```
 
 &nbsp;

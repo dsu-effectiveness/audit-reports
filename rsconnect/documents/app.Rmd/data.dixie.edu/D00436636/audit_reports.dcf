@@ -5,9 +5,9 @@ account: D00436636
 server: data.dixie.edu
 hostUrl: https://data.dixie.edu/__api__
 appId: 48
-bundleId: 1067
+bundleId: 1070
 url: https://data.dixie.edu/content/48/
-when: 1637274980.1774
-lastSyncTime: 1637274980.1774
+when: 1637275754.54172
+lastSyncTime: 1637275754.54172
 asMultiple: FALSE
 asStatic: FALSE
