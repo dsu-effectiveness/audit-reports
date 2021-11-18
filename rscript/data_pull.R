@@ -25,4 +25,4 @@ courses_sql <- pin_get("audit_reports_courses_pin", board="rsconnect")
 spbpers_sql <- pin_get("audit_reports_spbpers_pin", board="rsconnect")
 sorhsch_sql <- pin_get("audit_reports_sorhsch_pin", board="rsconnect")
 goradid_sql <- pin_get("audit_reports_goradid_pin", board="rsconnect")
-
+perkins_sql <- pin_get("audit_reports_perkins_courses", board="rsconnect")

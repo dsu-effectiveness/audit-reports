@@ -62,24 +62,43 @@ demo_check_08 <- filter(spbpers_sql, !is.na(spbpers_sql$ssn)) %>%
   select(term, season, banner_id, first_name, last_name, ssn_masked, birth_date, all_of(student_columns02), all_of(student_columns03)) %>%
   arrange(ssn_masked)
 
+## ADD bad SSN check here!!!
+##demo_check_08A <- select(student_sql, lenght(ssn))
+##  filter(student_sql, length(ssn))
+#Demographics - Bad SSN
+demo_check_09 <- filter(student_sql, 
+                        !is.na(ssn) &
+                        str_starts(ssn, "9", negate = TRUE) &
+                        (ssn >= '987654320' & ssn <= '987654329') |
+                        ssn %in% c('078051120', '111111111', '123456789', '219099999') |
+                        str_starts(ssn, "000") |
+                        str_starts(ssn, "666") |
+                        str_sub(ssn,4,2) == '00' |
+                        str_sub(ssn, 6,4) == '0000' |
+                        str_detect(ssn, '[a-z]') |
+                        str_length(ssn) < 9)  %>%
+  fn_return_data('Demographics', 'Bad SSN Format', 'spbpers', 'spbpers_ssn') %>%
+  select(all_of(student_columns01), ssn, ssn_masked, all_of(student_columns02), all_of(student_columns03))
+
+
 #Demographics - Null citizenship
-demo_check_09 <- filter(student_sql, is.na(citz_code)) %>%
+demo_check_10 <- filter(student_sql, is.na(citz_code)) %>%
   fn_return_data('Demographics', 'Null citizenship code found', 'spbpers', 'spbpers_citz_code') %>%
   select(all_of(student_columns01), citz_code, all_of(student_columns02), all_of(student_columns03))
 
 #Demographics - High School Graduation Date is NULL
-demo_check_10 <- filter(student_sql, is.na(high_school_grad_date) & student_type != 'P') %>%
+demo_check_11 <- filter(student_sql, is.na(high_school_grad_date) & student_type != 'P') %>%
   fn_return_data('Demographics', 'Missing High School Graduation Date', 'sorhsch', 'sorhsch_graduation_date') %>%
   select(all_of(student_columns01), student_type, high_school_grad_date, age, all_of(student_columns02), all_of(student_columns03))
 
 #Demographics - Duplicate HS
-demo_check_11 <- filter(sorhsch_sql, !is.na(sorhsch_sql$hs_code)) %>%
+demo_check_12 <- filter(sorhsch_sql, !is.na(sorhsch_sql$hs_code)) %>%
   get_dupes(sorhsch_pidm) %>%
   fn_return_data('Demographics', 'Duplicate High School Found', 'sorhsch', 'sorhsch_pidm') %>%
   select(term, season, banner_id, first_name, last_name, hs_code, hs_description, hs_graduation_date, all_of(student_columns02), all_of(student_columns03), dupe_count)
 
 #Demographics - US non citzen nationals
-demo_check_12 <- filter(student_sql, 
+demo_check_13 <- filter(student_sql, 
                        (citz_code != '5' & 
                         admit_state == 'AS') | 
                        (citz_code == '5' &
@@ -88,40 +107,18 @@ demo_check_12 <- filter(student_sql,
   select(all_of(student_columns01), citz_code, admit_state, all_of(student_columns02), all_of(student_columns03))
 
 #Demographics - Undocumented students - Need to add HS Desc
-demo_check_13 <- filter(student_sql, 
+demo_check_14 <- filter(student_sql, 
                         citz_code == '4' & 
                        (admit_state != 'UT' |
                         str_detect(high_school_code, '^45', negate = TRUE)))
 
 #Demographics - Age is outside of normal range
-demo_check_14 <- filter(student_sql, age > '20' & entry_action %in% c('HS', 'FH') 
+demo_check_15 <- filter(student_sql, age > '20' & entry_action %in% c('HS', 'FH') 
                         | age <= 10
                           | age >= 100) %>%
   fn_return_data('Demographics', 'Double check age or entry action', 'sorhsch', 'sorhsch_graduation_date') %>%
   select(all_of(student_columns01), age, high_school_grad_date, entry_action, all_of(student_columns02), all_of(student_columns03))
 
-#Demographics - Duplicate SSIDs
-demo_check_15 <- goradid_sql %>%
-  get_dupes(ssid) %>%
-  fn_return_data('Demographics', 'Duplicate SSID', 'goradid', 'goradid_additional_id') %>%
-  select(term, season, banner_id, first_name, last_name, ssid, all_of(student_columns02), all_of(student_columns03)) %>%
-  arrange(ssid)
-
-#Demographics - SSID must be 7 digits and begin with 1 or 2
-demo_check_16 <- filter(student_sql, (!is.na(ssid) &
-                                      str_detect(ssid, '^1|^2', negate = TRUE)) |
-                                      str_length(ssid) != 7
-                                     
-                        )  %>%
-                  mutate(ssid_length = str_length(ssid),
-                         error_message = case_when(str_length(ssid) != 7 ~ 'SSID must be 7 digits',
-                                                   str_detect(ssid, '^1|^2', negate = TRUE) ~ 'SSID must begin with 1 or 2'
-                                                   )
-                                 
-                         ) %>%
-  fn_return_data('Demographics', error_message, 'goradid', 'goradid_additional_id') %>%
-  select(term, season, banner_id, first_name, last_name, ssid, ssid_length, all_of(student_columns02), all_of(student_columns03))
-	
 #INTERNATIONAL STUDENTS
 #Visa Errors
 today <- lubridate::now()
@@ -317,3 +314,32 @@ ie_check_01 <-  mutate(student_sql, entry_action_mapped = case_when(
     filter(entry_action_mapped != student_type) %>%
     fn_return_data('Student Type', 'Entry Action does not match student type') %>%
     select(all_of(student_columns01), student_type, entry_action, first_term_enrolled, last_term_enrolled, all_of(student_columns02))
+
+## CONCURRENT ENROLLMENT
+#Concurrent Enrollment - Duplicate SSIDs
+ce_check_01<- goradid_sql %>%
+  get_dupes(ssid) %>%
+  fn_return_data('Demographics', 'Duplicate SSID', 'goradid', 'goradid_additional_id') %>%
+  select(term, season, banner_id, first_name, last_name, ssid, all_of(student_columns02), all_of(student_columns03)) %>%
+  arrange(ssid)
+
+#Concurrent Enrollment- SSID must be 7 digits and begin with 1 or 2
+ce_check_02 <- filter(student_sql, (!is.na(ssid) & 
+                                    str_detect(ssid, '^1|^2', negate = TRUE)) |
+                                    str_length(ssid) != 7
+                                    )  %>%
+  mutate(ssid_length = str_length(ssid),
+         error_message = case_when(str_length(ssid) != 7 ~ 'SSID must be 7 digits',
+                                   str_detect(ssid, '^1|^2', negate = TRUE) ~ 'SSID must begin with 1 or 2'
+         )
+         
+  ) %>%
+  fn_return_data('Demographics', error_message, 'goradid', 'goradid_additional_id') %>%
+  select(term, season, banner_id, first_name, last_name, ssid, ssid_length, all_of(student_columns02), all_of(student_columns03))
+
+ce_check_03 <- filter(student_sql, 
+                      student_type == 'H' &
+                      is.na(ssid)
+                      )%>%
+  fn_return_data('Demographics', 'HS Student with missing SSID', 'goradid', 'goradid_additional_id') %>%
+  select(all_of(student_columns01), student_type, high_school_desc, ssid, all_of(student_columns02))
