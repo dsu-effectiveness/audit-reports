@@ -1051,7 +1051,10 @@ if(nrow(ce_check_01) > 0) {
   mkd_table(ce_check_01, "SSID", unique(ce_check_01$error_message)) %>%
     cols_label(banner_id = md("**Student ID**"),
                first_name = md("**First Name**"),
+               middle_name = md("**Middle Name**"),
                last_name = md("**Last Name**"),
+               birth_date = md("**DOB**"),
+               high_school_desc = md("**HS**"),
                ssid = md("**SSID**"),
                banner_table = md("**Table Name**"),
                banner_column = md("**Column Name**")
@@ -1066,7 +1069,10 @@ if(nrow(ce_check_02) > 0) {
     cols_label(term = md("**Term**"),
                banner_id = md("**Student ID**"),
                first_name = md("**First Name**"),
+               middle_name = md("**Middle Name**"),
                last_name = md("**Last Name**"),
+               birth_date = md("**DOB**"),
+               high_school_desc = md("**HS**"),
                ssid = md("**SSID**"),
                ssid_length= md("**SSID Length**"),
                banner_table = md("**Table Name**"),
@@ -1076,10 +1082,29 @@ if(nrow(ce_check_02) > 0) {
 }
 ```
 
+
+
+```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE, fig.align='left'}
+if(nrow(ce_check_03) > 0) {
+  mkd_table(ce_check_03, "SSID", unique(ce_check_03$error_message)) %>%
+    cols_label(term = md("**Term**"),
+               banner_id = md("**Student ID**"),
+               first_name = md("**First Name**"),
+               middle_name = md("**Middle Name**"),
+               last_name = md("**Last Name**"),
+               birth_date = md("**DOB**"),
+               student_type = md("**Student Type**"),
+               high_school_desc = md("**HS**"),
+               ssid = md("**SSID**")
+               ) %>%
+    cols_hide(c("error_message", "season"))
+}
+```
+
 &nbsp;
 
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
-ce_list <- list(ce_check_01, ce_check_02) 
+ce_list <- list(ce_check_01, ce_check_02, ce_check_03) 
 download_data(ce_list, 'HS Concurrent Enrollment')
 ```
 

@@ -317,10 +317,14 @@ ie_check_01 <-  mutate(student_sql, entry_action_mapped = case_when(
 
 ## CONCURRENT ENROLLMENT
 #Concurrent Enrollment - Duplicate SSIDs
+student_join <- select(student_sql, pidm, middle_name, birth_date, high_school_code, high_school_desc) %>%
+  distinct()
+
 ce_check_01<- goradid_sql %>%
   get_dupes(ssid) %>%
+  left_join(student_join) %>%
   fn_return_data('Demographics', 'Duplicate SSID', 'goradid', 'goradid_additional_id') %>%
-  select(term, season, banner_id, first_name, last_name, ssid, all_of(student_columns02), all_of(student_columns03)) %>%
+  select(term, season, banner_id, first_name, middle_name, last_name, birth_date, high_school_desc, ssid, all_of(student_columns02), all_of(student_columns03)) %>%
   arrange(ssid)
 
 #Concurrent Enrollment- SSID must be 7 digits and begin with 1 or 2
@@ -332,14 +336,15 @@ ce_check_02 <- filter(student_sql, (!is.na(ssid) &
          error_message = case_when(str_length(ssid) != 7 ~ 'SSID must be 7 digits',
                                    str_detect(ssid, '^1|^2', negate = TRUE) ~ 'SSID must begin with 1 or 2'
          )
-         
   ) %>%
   fn_return_data('Demographics', error_message, 'goradid', 'goradid_additional_id') %>%
-  select(term, season, banner_id, first_name, last_name, ssid, ssid_length, all_of(student_columns02), all_of(student_columns03))
+  select(term, season, banner_id, first_name, middle_name, last_name, birth_date, high_school_desc, ssid, ssid_length, all_of(student_columns02), all_of(student_columns03))
 
 ce_check_03 <- filter(student_sql, 
                       student_type == 'H' &
                       is.na(ssid)
                       )%>%
   fn_return_data('Demographics', 'HS Student with missing SSID', 'goradid', 'goradid_additional_id') %>%
-  select(all_of(student_columns01), student_type, high_school_desc, ssid, all_of(student_columns02))
+  select(term, season, banner_id, first_name, middle_name, last_name, birth_date, student_type, high_school_desc, ssid, all_of(student_columns02))
+
+         
