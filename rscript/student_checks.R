@@ -53,7 +53,7 @@ fn_return_data('Demographics', 'Missing HS Code', 'sorhsch', 'sorhsch_sbgi_code'
 #Demographics - High School Graduation Date
 demo_check_07 <- filter(student_sql, birth_date >= high_school_grad_date)%>%
   fn_return_data('Demographics', 'DOB must be before HS Graduation Date', 'sorhsch, spbpers', 'sorhsch_graduation_date, spbpers_birth_date') %>%
-  select(all_of(student_columns01), age, high_school_grad_date, all_of(student_columns02), all_of(student_columns03))
+  select(all_of(student_columns01), age, birth_date, high_school_grad_date, all_of(student_columns02), all_of(student_columns03))
 
 #Demographics - Duplicate SSN's
 demo_check_08 <- filter(spbpers_sql, !is.na(spbpers_sql$ssn)) %>%

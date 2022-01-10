@@ -1,0 +1,13 @@
+name: audit_reports2
+title: Audit Reports
+username: D00436636
+account: D00436636
+server: data.dixie.edu
+hostUrl: https://data.dixie.edu/__api__
+appId: 93
+bundleId: 1225
+url: https://data.dixie.edu/content/93/
+when: 1638914804.9851
+lastSyncTime: 1638914804.9851
+asMultiple: FALSE
+asStatic: TRUE

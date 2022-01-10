@@ -224,7 +224,8 @@ if(nrow(demo_check_07) > 0) {
                first_name = md("**First Name**"),
                last_name = md("**Last Name**"),
                age = md("**Age Code**"),
-               high_school_code = md("**HS Code**"),
+               birth_date = md("**DOB**"),
+               high_school_grad_date = md("**HS Grad Date**"),
                error_message = md("**Error Message**"),
                banner_table = md("**Table Name**"),
                banner_column = md("**Column Name**")

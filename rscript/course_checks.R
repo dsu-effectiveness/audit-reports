@@ -100,12 +100,15 @@ schd_check_01 <- filter(courses_sql,
                         subject_code != 'CED' &
                         enrollment != 0 &
                         schedule_code %in% c('LEC', 'LEX') &
-                        (!is.na(lecture_hours) &
-                        !is.na(other_hours) & 
-                        other_hours > 0)) %>%
+                        is.na(lecture_hours) |
+                        (is.na(other_hours) & other_hours > 0 & schedule_code %in% c('LEC', 'LEX')) |
+                        (!is.na(lecture_hours) & other_hours > 0 & schedule_code %in% c('LEC', 'LEX')) |
+                        (is.na(other_hours) & lab_hours > 0 & schedule_code %in% c('LEC', 'LEX')) |
+                        (!is.na(lecture_hours) & lab_hours > 0 & schedule_code %in% c('LEC', 'LEX')) 
+                        ) %>%
                 fn_return_data('Schedule Type', paste(schedule_desc, ' type should only have lecture hours')) %>%
                 select(all_of(courses_columns01), schedule_code, credit_hours, lecture_hours, lab_hours, other_hours, all_of(courses_columns02))
- 
+view(schd_check_01)
 
 schd_check_02 <- filter(courses_sql,
                         subject_code != 'CED' &
@@ -184,4 +187,6 @@ schd_check_10 <- select(courses_sql, everything()) %>%
   fn_return_data('Schedule Type', 'Program Type does not align with Perkins Course List') %>%
   select(term, season, subject_code, course_number, program_type, error_message) %>%
   distinct()
+
+
 
