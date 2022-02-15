@@ -347,4 +347,19 @@ ce_check_03 <- filter(student_sql,
   fn_return_data('Demographics', 'HS Student with missing SSID', 'goradid', 'goradid_additional_id') %>%
   select(term, season, banner_id, first_name, middle_name, last_name, birth_date, student_type, high_school_desc, ssid, all_of(student_columns02))
 
+ce_check_04 <- student_sql %>%
+  left_join(student_courses_sql, by = c("term" = "term_code", "pidm")) %>%
+  left_join(courses_sql, by = c("crn", "term")) %>%
+  select(banner_id.x, first_name.x, middle_name, last_name.x, term, season, crn, high_school_desc, high_school_code, budget_code, subject_code.x, course_number.x, section_number.x, enrollment) %>%
+  filter(str_detect(high_school_code, '^45', negate = TRUE) & budget_code %in% c('BC', 'SF')) %>%
+  rename(banner_id = banner_id.x,
+         first_name = first_name.x,
+         last_name = last_name.x,
+         subject_code = subject_code.x,
+         course_number = course_number.x,
+         section_number = section_number.x) %>%
+  mutate(error_message = 'HS needs to be in Utah') %>%
+fn_return_data('Courses', error_message) %>%
+  select(term, banner_id, season, first_name, middle_name, last_name, crn, high_school_code , high_school_desc, subject_code, course_number, section_number, budget_code, enrollment, error_message)
+
          

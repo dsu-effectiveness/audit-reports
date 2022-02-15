@@ -13,7 +13,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-
 ```{r load libraries, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
 library(downloadthis)
 library(tidyverse)
@@ -21,7 +20,6 @@ library(gt)
 library(here)
 library(lubridate)
 ```
-
 
 ```{r}
 #Define Functions
@@ -105,10 +103,10 @@ download_data <- function(list_data, output_name){
 source(here::here('rscript', 'data_pull.R'))
 source(here::here('rscript', 'student_checks.R'))
 source(here::here('rscript', 'course_checks.R'))
-
 ```
 
 ## Audit Reports {.tabset}
+
 *Last Updated: `r unique(as_date(student_sql$daterun))`*
 
 ### Demographics
@@ -214,7 +212,6 @@ if(nrow(demo_check_06) > 0) {
     cols_hide(c("error_message", "season"))
 }
 ```
-
 
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE, fig.align='left'}
 if(nrow(demo_check_07) > 0) {
@@ -367,15 +364,15 @@ if(nrow(demo_check_15) > 0) {
 }
 ```
 
-
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
 demo_list <- list(demo_check_01, demo_check_02, demo_check_03, demo_check_04, demo_check_05, demo_check_06, demo_check_07, demo_check_08, demo_check_09, demo_check_10, demo_check_11, demo_check_12, demo_check_13, demo_check_14, demo_check_15) 
 download_data(demo_list, 'demographics')
 ```
 
-&nbsp;
+ 
 
 ### International Students
+
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
 if(nrow(int_error_01) > 0) {
 mkd_table(int_error_01, "Visa Type & Citizenship Code", unique(int_error_01$error_message)) %>%
@@ -399,9 +396,10 @@ int_list <- list(int_error_01)
 download_data(int_list, 'international')
 ```
 
-&nbsp;
+ 
 
 ### Degrees & Programs
+
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE, fig.align='left'}
 if(nrow(programs_check_01) > 0) {
   mkd_table(programs_check_01, "Degrees & Programs", unique(programs_check_01$error_message)) %>%
@@ -461,9 +459,10 @@ programs_list <- list(programs_check_01, programs_check_02, programs_check_03)
 download_data(programs_list, 'degrees_programs')
 ```
 
-&nbsp;
+ 
 
 ### Student Type
+
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
 if(nrow(stype_check_01) > 0) {
   mkd_table(stype_check_01, "Returning Students", unique(stype_check_01$error_message)) %>%
@@ -705,7 +704,7 @@ student_list <- list(stype_check_01, stype_check_02, stype_check_03, stype_check
 download_data(student_list, 'student_type')
 ```
 
-&nbsp;
+ 
 
 ### Courses
 
@@ -773,7 +772,6 @@ if(nrow(crse_check_04) > 0) {
 }
 ```
 
-
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
 # if(nrow(crse_check_05) > 0) {
 #   mkd_table(crse_check_05, "Budget Code", unique(crse_check_05$error_message)) %>%
@@ -825,7 +823,6 @@ if(nrow(crse_check_07) > 0) {
 }
 ```
 
-
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
 if(nrow(crse_check_08) > 0) {
   mkd_table(crse_check_08, "Courses & Rooms", unique(crse_check_08$error_message)) %>%
@@ -849,7 +846,7 @@ course_list <- list(crse_check_01, crse_check_02, crse_check_03, crse_check_04, 
 download_data(course_list, 'courses')
 ```
 
-&nbsp;
+ 
 
 ### Schedule Type
 
@@ -932,7 +929,6 @@ if(nrow(schd_check_04) > 0) {
     cols_hide(c("error_message", "season"))
 }
 ```
-
 
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
 if(nrow(schd_check_05) > 0) {
@@ -1037,13 +1033,14 @@ if(nrow(schd_check_10) > 0) {
     cols_hide(c("error_message", "season"))
 }
 ```
+
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
 schd_list <- list(schd_check_01, schd_check_02, schd_check_03, schd_check_04, schd_check_05,
                       schd_check_06, schd_check_07, schd_check_08, schd_check_09, schd_check_10) 
 download_data(schd_list, 'schedule_types')
 ```
 
-&nbsp;
+ 
 
 ### HS Concurrent Enrollment
 
@@ -1083,8 +1080,6 @@ if(nrow(ce_check_02) > 0) {
 }
 ```
 
-
-
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE, fig.align='left'}
 if(nrow(ce_check_03) > 0) {
   mkd_table(ce_check_03, "SSID", unique(ce_check_03$error_message)) %>%
@@ -1102,16 +1097,37 @@ if(nrow(ce_check_03) > 0) {
 }
 ```
 
-&nbsp;
+```{r echo=FALSE, error=FALSE, fig.align='left', message=FALSE, warning=FALSE}
+if(nrow(ce_check_04) > 0) {
+  mkd_table(ce_check_04, "HS Code", unique(ce_check_04$error_message)) %>%
+    cols_label(term = md("**Term**"),
+               banner_id = md("**Student ID**"),
+               first_name = md("**First Name**"),
+               last_name = md("**Last Name**"),
+               crn = md("**CRN**"),
+               high_school_desc = md("**HS**"),
+               high_school_code = md("**HS Code**"),
+               subject_code = md("**Subject**"),
+               course_number = md("**Course**"),
+               section_number = md("**Section**"),
+               budget_code = md("**Budget Code**"),
+               enrollment = md("**Enrollment**")
+               ) %>%
+    cols_hide(c("season", "middle_name", "error_message"))
+}
+```
+
+ 
 
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
-ce_list <- list(ce_check_01, ce_check_02, ce_check_03) 
+ce_list <- list(ce_check_01, ce_check_02, ce_check_03, ce_check_04) 
 download_data(ce_list, 'HS Concurrent Enrollment')
 ```
 
-&nbsp;
+ 
 
 ### IE Audits
+
 ```{r, message = FALSE, warning=FALSE, error = FALSE, echo = FALSE}
 if(nrow(ie_check_01) > 0) {
   mkd_table(ie_check_01, "Student Type vs Entry Action", unique(ie_check_01$error_message)) %>%
@@ -1134,4 +1150,4 @@ ie_list <- list(ie_check_01)
 download_data(ie_list, 'ie_audits')
 ```
 
-&nbsp;
+ 

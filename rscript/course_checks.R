@@ -57,12 +57,6 @@ crse_check_04 <- filter(courses_sql,
   fn_return_data('Courses', 'HS course assigned to budget schedule code') %>%
   select(all_of(courses_columns01), budget_code, all_of(courses_columns02))
 
-# crse_check_05 <- filter(courses_sql, 
-#                         active_ind == 'A' & 
-#                         occs_code == 'A') %>%
-#   fn_return_data('Courses', 'OCCS should be coded as V') %>%
-#   select(all_of(courses_columns01), occs_code, all_of(courses_columns02))
-
 crse_check_06 <- filter(courses_sql,
                         (  str_detect(budget_code, '^B') &
                              (campus_code != 'O01' & str_detect(section_number, '^4') & instruction_method == 'I' |
@@ -108,7 +102,6 @@ schd_check_01 <- filter(courses_sql,
                         ) %>%
                 fn_return_data('Schedule Type', paste(schedule_desc, ' type should only have lecture hours')) %>%
                 select(all_of(courses_columns01), schedule_code, credit_hours, lecture_hours, lab_hours, other_hours, all_of(courses_columns02))
-view(schd_check_01)
 
 schd_check_02 <- filter(courses_sql,
                         subject_code != 'CED' &
