@@ -207,9 +207,9 @@ stype_check_05 <- filter(student_sql,
   fn_return_data('Student Type', 'Student level and student type does not align') %>%
   select(all_of(student_columns01), student_level, student_type, entry_action, all_of(student_columns02))
 
-#exclude student type for students that started in summer and enrolled in fall
-stype_check_06_summer <- filter(student_sql, season == 'Summer') %>%
-                         mutate(term = as.double(term)) %>%
+#exclude student type for students that started in summer (first term enrolled) and enrolled in fall
+stype_check_06_summer <- filter(student_sql, substr(first_term_enrolled, 5,6) == '30') %>%
+                         mutate(term = as.double(first_term_enrolled),) %>%
                          select(banner_id, student_type, term) %>%
                          arrange(banner_id)
 
