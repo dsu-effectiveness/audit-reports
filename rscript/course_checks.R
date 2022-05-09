@@ -158,11 +158,13 @@ schd_check_08 <- filter(courses_sql,
   fn_return_data('Courses', 'Program type is blank') %>%
   select(all_of(courses_columns01), program_type, all_of(courses_columns02))
 
+
 # Perkins Course Checks
 perkins_data <- select(perkins_sql, ay, subj, crse) %>%
                        mutate(term_1 = str_c(ay,"40")) %>%
                        mutate(term_2 = str_c(as.numeric(ay) + 1, "20")) %>%
-                       mutate(term_3 = str_c(as.numeric(ay) + 1, "30"))
+                       mutate(term_3 = str_c(as.numeric(ay) + 1, "30")) %>%
+                       mutate(subj_crse_key = paste0(subj,crse))
 
 perkins_terms <- select(perkins_data, term_1, term_2, term_3) %>%
          (distinct)
@@ -174,12 +176,13 @@ schd_check_09 <- select(courses_sql, everything()) %>%
                  select(term, season, subject_code, course_number, program_type, error_message) %>%
                  distinct()
 
+# Checks to make sure Vocational Programs exist on Programs List
 schd_check_10 <- select(courses_sql, everything()) %>%
-  anti_join(perkins_data, by = c('subject_code' = 'subj', 'course_number' = 'crse')) %>%
-  filter(program_type != 'A', term %in% c(perkins_terms)) %>%
+  mutate(subj_crse_key = paste0(subject_code, course_number)) %>%
+  filter(program_type != 'A' &
+         term %in% c(perkins_terms) &
+         subj_crse_key %in% c(distinct(perkins_data, subj_crse_key))
+  ) %>%
   fn_return_data('Schedule Type', 'Program Type does not align with Perkins Course List') %>%
   select(term, season, subject_code, course_number, program_type, error_message) %>%
   distinct()
-
-
-
