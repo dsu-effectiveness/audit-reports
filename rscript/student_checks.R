@@ -157,7 +157,7 @@ community_ed_data <- filter(student_courses_sql, subject_code == 'CED') %>%
 
 programs_check_03 <- filter(student_sql, is.na(cur_prgm)) %>%
   mutate(
-    community_ed_match = community_ed_data$pidm %in% pidm
+    community_ed_match = community_ed_data %in% pidm
   ) %>%
   filter(!community_ed_match) %>%
   fn_return_data('Programs', 'Blank Program', 'sorlcur', 'sorlcur_program') %>%
